@@ -68,7 +68,9 @@ class AuthViewModel(var navController: NavHostController, var context: Context) 
                 Toast.makeText(context, "Login successful", Toast.LENGTH_SHORT).show()
                 navController.navigate(Route.Dashboard.path)
             } else {
-                Toast.makeText(context, task.exception?.message, Toast.LENGTH_SHORT).show()
+                // If CONFIGURATION_NOT_FOUND, it usually means Email/Password is disabled in Firebase Console
+                val errorMessage = task.exception?.message ?: "Login failed"
+                Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
             }
         }
     }

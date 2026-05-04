@@ -18,6 +18,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -67,7 +68,7 @@ fun LoginScreen(navController: NavHostController) {
         Spacer(modifier = Modifier.height(20.dp))
         
         Image(
-            painter = painterResource(id = R.drawable.ic_launcher_foreground),
+            painter = painterResource(id = R.drawable.jarmoluk_hands_2847508_1920),
             contentDescription = "logo",
             modifier = Modifier
                 .size(200.dp)
@@ -84,10 +85,18 @@ fun LoginScreen(navController: NavHostController) {
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Email,
-                    contentDescription = "email icon"
+                    contentDescription = "email icon",
+                    tint = Color.Blue
                 )
             },
             modifier = Modifier.fillMaxWidth(),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = Color.Black,
+                unfocusedBorderColor = Color.Black,
+                focusedLabelColor = Color.Blue,
+                unfocusedLabelColor = Color.Blue,
+                cursorColor = Color.Black
+            )
         )
 
         OutlinedTextField(
@@ -98,11 +107,19 @@ fun LoginScreen(navController: NavHostController) {
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Lock,
-                    contentDescription = "password icon"
+                    contentDescription = "password icon",
+                    tint = Color.Blue
                 )
             },
             modifier = Modifier.fillMaxWidth(),
             visualTransformation = PasswordVisualTransformation(),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = Color.Black,
+                unfocusedBorderColor = Color.Black,
+                focusedLabelColor = Color.Blue,
+                unfocusedLabelColor = Color.Blue,
+                cursorColor = Color.Black
+            )
         )
 
         Spacer(modifier = Modifier.height(24.dp))

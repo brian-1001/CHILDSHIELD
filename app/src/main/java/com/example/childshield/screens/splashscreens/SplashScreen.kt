@@ -22,14 +22,28 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.childshield.R
 import com.example.childshield.navigation.Route
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.delay
 
 @Composable
 fun SplashScreen(navController: NavHostController){
     LaunchedEffect(key1 = true) {
         delay(2000)
-        navController.navigate(Route.Login.path) {
-            popUpTo(Route.Splash.path) { inclusive = true }
+        
+        val currentUser = try {
+            FirebaseAuth.getInstance().currentUser
+        } catch (_: Exception) {
+            null
+        }
+
+        if (currentUser != null) {
+            navController.navigate(Route.Dashboard.path) {
+                popUpTo(Route.Splash.path) { inclusive = true }
+            }
+        } else {
+            navController.navigate(Route.Login.path) {
+                popUpTo(Route.Splash.path) { inclusive = true }
+            }
         }
     }
     Box(modifier = Modifier
@@ -39,7 +53,7 @@ fun SplashScreen(navController: NavHostController){
     ){
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Image(
-                painter = painterResource(id = R.drawable.ic_launcher_foreground),
+                painter = painterResource(id = R.drawable.chuotanhls_kids_4305233_1920),
                 contentDescription = "logo",
                 modifier = Modifier
                     .size(250.dp)

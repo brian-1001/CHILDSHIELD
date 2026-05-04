@@ -1,7 +1,6 @@
 package com.example.childshield.screens.dashboard
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,10 +15,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.BottomAppBar
@@ -73,12 +72,12 @@ fun DashboardScreen(navController: NavHostController){
                     IconButton(onClick = { navController.navigate(Route.Settings.path) }) {
                         Icon(
                             Icons.Default.Settings,
-                            contentDescription = "settings icon"
+                            contentDescription = "settings icon",
                         )
                     }
                     IconButton(onClick = { myauth.logout() }) {
                         Icon(
-                            Icons.Default.ExitToApp,
+                            Icons.AutoMirrored.Filled.ExitToApp,
                             contentDescription = "logout icon"
                         )
                     }
@@ -180,20 +179,19 @@ fun DashboardScreen(navController: NavHostController){
                 )
             }
             
-            Row(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .horizontalScroll(rememberScrollState())
                     .padding(16.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 // Card 1: Add Report
                 Card(
                     modifier = Modifier
-                        .width(200.dp)
+                        .fillMaxWidth()
                         .height(150.dp)
                         .clickable {
-                        navController.navigate(Route.AddReport.path)
+                            navController.navigate(Route.AddReport.path)
                         },
                     shape = RoundedCornerShape(16.dp),
                     elevation = CardDefaults.cardElevation(8.dp),
@@ -219,7 +217,7 @@ fun DashboardScreen(navController: NavHostController){
                 // Card 2: Report List
                 Card(
                     modifier = Modifier
-                        .width(200.dp)
+                        .fillMaxWidth()
                         .height(150.dp)
                         .clickable {
                             navController.navigate(Route.ReportList.path)
@@ -238,7 +236,7 @@ fun DashboardScreen(navController: NavHostController){
                     ) {
                         Text("report list", color = Color.Blue, fontSize = 24.sp)
                         Icon(
-                            imageVector = Icons.Default.List,
+                            imageVector = Icons.AutoMirrored.Filled.List,
                             contentDescription = "icon",
                             modifier = Modifier.size(40.dp)
                         )
@@ -248,7 +246,7 @@ fun DashboardScreen(navController: NavHostController){
                 // Card 3: My Profile
                 Card(
                     modifier = Modifier
-                        .width(200.dp)
+                        .fillMaxWidth()
                         .height(150.dp)
                         .clickable {
                             navController.navigate(Route.Profile.path)
