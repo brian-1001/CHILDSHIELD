@@ -89,6 +89,7 @@ class AuthViewModel(var navController: NavHostController, var context: Context) 
                 }
 
                 override fun onCancelled(error: DatabaseError) {
+                    Toast.makeText(context, "User details error: ${error.message}", Toast.LENGTH_LONG).show()
                     callback(null)
                 }
             })

@@ -1,7 +1,11 @@
 package com.example.childshield.screens.dashboard
 
+import android.content.Intent
+import android.net.Uri
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,7 +13,18 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Surface
+import androidx.compose.runtime.mutableStateListOf
+import com.example.childshield.data.ReportViewModel
+import com.example.childshield.models.ChildModel
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -44,6 +59,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -59,16 +75,21 @@ import com.example.childshield.navigation.Route
 fun DashboardScreen(navController: NavHostController){
     val context = LocalContext.current
     val myauth = AuthViewModel(navController, context)
+    val reportViewModel = ReportViewModel(navController, context)
+    var searchQuery by remember { mutableStateOf("") }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("CHILD SHIELD") },
+                title = { Text("CHILD SHIELD", fontWeight = FontWeight.ExtraBold) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.White,
-                    titleContentColor = Color.Blue,
+                    titleContentColor = Color.Red,
                 ),
                 actions = {
+                    IconButton(onClick = { Toast.makeText(context, "No new notifications", Toast.LENGTH_SHORT).show() }) {
+                        Icon(Icons.Default.Notifications, contentDescription = "notifications", tint = Color.Gray)
+                    }
                     IconButton(onClick = { navController.navigate(Route.Settings.path) }) {
                         Icon(
                             Icons.Default.Settings,
@@ -78,11 +99,25 @@ fun DashboardScreen(navController: NavHostController){
                     IconButton(onClick = { myauth.logout() }) {
                         Icon(
                             Icons.AutoMirrored.Filled.ExitToApp,
-                            contentDescription = "logout icon"
+                            contentDescription = "logout icon",
+                            tint = Color.Red
                         )
                     }
                 }
             )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
+                    val intent = Intent(Intent.ACTION_DIAL)
+                    intent.data = Uri.parse("tel:999")
+                    context.startActivity(intent)
+                },
+                containerColor = Color.Red,
+                contentColor = Color.White
+            ) {
+                Icon(Icons.Default.Warning, contentDescription = "Emergency")
+            }
         },
 
         bottomBar = {
@@ -138,13 +173,43 @@ fun DashboardScreen(navController: NavHostController){
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
         ) {
-            Text("Welcome to ChildShield", modifier = Modifier.padding(16.dp))
+            // Stats Overview
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                StatCard("Total", "128", Color.Blue)
+                StatCard("Resolved", "86", Color(0xFF4CAF50)) // Green
+                StatCard("Active", "42", Color.Red)
+            }
+
+            // Quick Search
+            OutlinedTextField(
+                value = searchQuery,
+                onValueChange = { searchQuery = it },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                placeholder = { Text("Search by name or location...") },
+                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                shape = RoundedCornerShape(30.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Color.Blue,
+                    unfocusedBorderColor = Color.Gray
+                )
+            )
 
             var user by remember { mutableStateOf<User?>(null) }
+            val reports = remember { mutableStateListOf<ChildModel>() }
+            val emptyReportState = remember { mutableStateOf(ChildModel()) }
+
             LaunchedEffect(Unit) {
                 myauth.getUserDetails { fetchedUser ->
                     user = fetchedUser
                 }
+                reportViewModel.allReports(emptyReportState, reports)
             }
 
             Row(
@@ -196,7 +261,7 @@ fun DashboardScreen(navController: NavHostController){
                     shape = RoundedCornerShape(16.dp),
                     elevation = CardDefaults.cardElevation(8.dp),
                     colors = CardDefaults.cardColors(
-                        containerColor = Color.Gray,
+                        containerColor = Color.Red, // Meaningful color for adding reports
                         contentColor = Color.White
                     )
                 ) {
@@ -205,7 +270,8 @@ fun DashboardScreen(navController: NavHostController){
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
-                        Text("add report", color = Color.Blue, fontSize = 24.sp)
+                        Text("REPORT A CASE", color = Color.White, fontSize = 24.sp, fontWeight = FontWeight.Bold)
+                        Text("Urgent Help Needed", color = Color.White.copy(alpha = 0.8f), fontSize = 14.sp)
                         Icon(
                             imageVector = Icons.Default.Add,
                             contentDescription = "icon",
@@ -225,7 +291,7 @@ fun DashboardScreen(navController: NavHostController){
                     shape = RoundedCornerShape(16.dp),
                     elevation = CardDefaults.cardElevation(8.dp),
                     colors = CardDefaults.cardColors(
-                        containerColor = Color.Gray,
+                        containerColor = Color.Blue,
                         contentColor = Color.White
                     )
                 ) {
@@ -234,7 +300,8 @@ fun DashboardScreen(navController: NavHostController){
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
-                        Text("report list", color = Color.Blue, fontSize = 24.sp)
+                        Text("VIEW ALL MISSING CASES", color = Color.White, fontSize = 24.sp, fontWeight = FontWeight.Bold)
+                        Text("Help identify children", color = Color.White.copy(alpha = 0.8f), fontSize = 14.sp)
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.List,
                             contentDescription = "icon",
@@ -243,7 +310,7 @@ fun DashboardScreen(navController: NavHostController){
                     }
                 }
 
-                // Card 3: My Profile
+                // Card 3: My Profile / My Reports
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -254,7 +321,7 @@ fun DashboardScreen(navController: NavHostController){
                     shape = RoundedCornerShape(16.dp),
                     elevation = CardDefaults.cardElevation(8.dp),
                     colors = CardDefaults.cardColors(
-                        containerColor = Color.Gray,
+                        containerColor = Color(0xFF424242), // Dark gray/black
                         contentColor = Color.White
                     )
                 ) {
@@ -263,7 +330,8 @@ fun DashboardScreen(navController: NavHostController){
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
-                        Text("my profile", color = Color.Blue, fontSize = 24.sp)
+                        Text("MY PROFILE & REPORTS", color = Color.White, fontSize = 24.sp, fontWeight = FontWeight.Bold)
+                        Text("Track your submissions", color = Color.White.copy(alpha = 0.8f), fontSize = 14.sp)
                         Icon(
                             imageVector = Icons.Default.Person,
                             contentDescription = "icon",
@@ -271,7 +339,154 @@ fun DashboardScreen(navController: NavHostController){
                         )
                     }
                 }
+
+                // New Section Header
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "Recently Reported Children",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Red // Use Red for urgency
+                )
+
+                // Recently Reported Children Cards
+                if (reports.isEmpty()) {
+                    Text("No reports found", modifier = Modifier.padding(vertical = 8.dp))
+                } else {
+                    reports.filter { 
+                        it.name.contains(searchQuery, ignoreCase = true) || 
+                        it.lastSeenLocation.contains(searchQuery, ignoreCase = true) 
+                    }.take(5).forEach { child ->
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(160.dp)
+                                .clickable {
+                                    navController.navigate(Route.UpdateReport.path + "/${child.id}")
+                                },
+                            shape = RoundedCornerShape(16.dp),
+                            elevation = CardDefaults.cardElevation(8.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = if (child.status == "Found") Color(0xFFE8F5E9) else Color(0xFFFAFAFA),
+                                contentColor = Color.Black
+                            )
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxSize().padding(12.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                // Column 1: Child's Photo
+                                Box(modifier = Modifier.size(120.dp)) {
+                                    Card(
+                                        shape = RoundedCornerShape(12.dp),
+                                        modifier = Modifier.fillMaxSize(),
+                                        elevation = CardDefaults.cardElevation(4.dp)
+                                    ) {
+                                        if (child.imageUrl.isNotEmpty()) {
+                                            AsyncImage(
+                                                model = child.imageUrl,
+                                                contentDescription = "Child Photo",
+                                                modifier = Modifier.fillMaxSize(),
+                                                contentScale = ContentScale.Crop
+                                            )
+                                        } else {
+                                            Icon(
+                                                imageVector = Icons.Default.Person,
+                                                contentDescription = "No Photo",
+                                                modifier = Modifier.fillMaxSize().padding(25.dp),
+                                                tint = Color.Gray
+                                            )
+                                        }
+                                    }
+                                    
+                                    if (child.status != "Found") {
+                                        Surface(
+                                            color = Color.Red,
+                                            shape = RoundedCornerShape(bottomEnd = 12.dp),
+                                            modifier = Modifier.align(Alignment.TopStart)
+                                        ) {
+                                            Text(
+                                                "🚨 URGENT",
+                                                color = Color.White,
+                                                modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp),
+                                                fontSize = 8.sp,
+                                                fontWeight = FontWeight.Bold
+                                            )
+                                        }
+                                    }
+                                }
+
+                                Spacer(modifier = Modifier.width(16.dp))
+
+                                // Column 2: Child's details
+                                Column(
+                                    modifier = Modifier.weight(1f),
+                                    verticalArrangement = Arrangement.Center
+                                ) {
+                                    Text(
+                                        text = child.name.uppercase(),
+                                        fontSize = 18.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = if (child.status == "Found") Color(0xFF2E7D32) else Color.Red
+                                    )
+                                    Text(
+                                        text = "AGE: ${child.age} YEARS",
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.SemiBold
+                                    )
+                                    Text(
+                                        text = "📍 ${child.lastSeenLocation}",
+                                        fontSize = 13.sp,
+                                        color = Color.DarkGray
+                                    )
+                                    if (child.status == "Found") {
+                                        Text(
+                                            "REUNITED ✅",
+                                            color = Color(0xFF2E7D32),
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 12.sp
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Safety Tips Section
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 16.dp)
+                        .clickable {
+                            Toast.makeText(context, "Tip: Keep recent photos of your children.", Toast.LENGTH_LONG).show()
+                        },
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFFFFF3E0))
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text("💡 Safety Tip", fontWeight = FontWeight.Bold, color = Color(0xFFE65100))
+                        Text("Always teach children their full name, your phone number, and address.", fontSize = 14.sp)
+                    }
+                }
             }
+            Spacer(modifier = Modifier.height(32.dp))
+        }
+    }
+}
+
+@Composable
+fun StatCard(label: String, value: String, color: Color) {
+    Card(
+        modifier = Modifier.width(100.dp),
+        colors = CardDefaults.cardColors(containerColor = color.copy(alpha = 0.1f)),
+        shape = RoundedCornerShape(12.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(value, fontWeight = FontWeight.Bold, fontSize = 20.sp, color = color)
+            Text(label, fontSize = 12.sp, color = Color.Gray)
         }
     }
 }

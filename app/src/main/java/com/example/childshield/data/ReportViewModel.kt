@@ -131,7 +131,7 @@ class ReportViewModel(
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(context, "Database error", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Database error: ${error.message}", Toast.LENGTH_LONG).show()
             }
         })
 
@@ -142,9 +142,19 @@ class ReportViewModel(
         databaseReference.child(reportId).removeValue().addOnCompleteListener {
             if (it.isSuccessful) {
                 Toast.makeText(context, "Report deleted", Toast.LENGTH_SHORT).show()
+                navController.popBackStack()
             } else {
                 Toast.makeText(context, "Error deleting report", Toast.LENGTH_SHORT).show()
             }
+        }
+    }
+
+    fun getReportById(reportId: String, onResult: (ChildModel?) -> Unit) {
+        databaseReference.child(reportId).get().addOnSuccessListener { snapshot ->
+            val child = snapshot.getValue(ChildModel::class.java)
+            onResult(child)
+        }.addOnFailureListener {
+            onResult(null)
         }
     }
 
