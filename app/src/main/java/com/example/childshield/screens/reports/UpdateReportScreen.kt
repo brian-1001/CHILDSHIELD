@@ -11,6 +11,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.PictureAsPdf
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -23,6 +24,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.childshield.data.ReportViewModel
 import com.example.childshield.models.ChildModel
+import com.example.childshield.navigation.Route
 import com.google.firebase.auth.FirebaseAuth
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -33,11 +35,20 @@ fun UpdateReportScreen(navController: NavHostController, id: String) {
 
     var name by remember { mutableStateOf("") }
     var age by remember { mutableStateOf("") }
+    var gender by remember { mutableStateOf("") }
+    var hairColor by remember { mutableStateOf("") }
+    var distinguishingFeatures by remember { mutableStateOf("") }
+    var dateMissing by remember { mutableStateOf("") }
+    var timeMissing by remember { mutableStateOf("") }
     var location by remember { mutableStateOf("") }
+    var latitude by remember { mutableStateOf<Double?>(null) }
+    var longitude by remember { mutableStateOf<Double?>(null) }
     var description by remember { mutableStateOf("") }
+    var emergencyContact by remember { mutableStateOf("") }
     var status by remember { mutableStateOf("Missing") }
     var currentImageUrl by remember { mutableStateOf("") }
     var imageUri by remember { mutableStateOf<Uri?>(null) }
+    
     val currentUserId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
 
     // Automatically load data for the child
@@ -50,8 +61,16 @@ fun UpdateReportScreen(navController: NavHostController, id: String) {
                 }
                 name = it.name
                 age = it.age.toString()
+                gender = it.gender
+                hairColor = it.hairColor
+                distinguishingFeatures = it.distinguishingFeatures
+                dateMissing = it.dateMissing
+                timeMissing = it.timeMissing
                 location = it.lastSeenLocation
+                latitude = it.latitude
+                longitude = it.longitude
                 description = it.description
+                emergencyContact = it.emergencyContact
                 status = it.status
                 currentImageUrl = it.imageUrl
             }
@@ -93,26 +112,11 @@ fun UpdateReportScreen(navController: NavHostController, id: String) {
         ) {
             Text(text = "Editing details for $name", fontSize = 18.sp, fontWeight = FontWeight.Bold)
 
-            OutlinedTextField(
-                value = name,
-                onValueChange = { name = it },
-                label = { Text("Update Name") },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            OutlinedTextField(
-                value = age,
-                onValueChange = { age = it },
-                label = { Text("Update Age") },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            OutlinedTextField(
-                value = location,
-                onValueChange = { location = it },
-                label = { Text("Update Last Seen Location") },
-                modifier = Modifier.fillMaxWidth()
-            )
+            OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text("Update Name") }, modifier = Modifier.fillMaxWidth())
+            OutlinedTextField(value = age, onValueChange = { age = it }, label = { Text("Update Age") }, modifier = Modifier.fillMaxWidth())
+            
+            OutlinedTextField(value = location, onValueChange = { location = it }, label = { Text("Update Last Seen Location") }, modifier = Modifier.fillMaxWidth())
+            OutlinedTextField(value = emergencyContact, onValueChange = { emergencyContact = it }, label = { Text("Emergency Contact") }, modifier = Modifier.fillMaxWidth())
 
             OutlinedTextField(
                 value = description,
@@ -141,10 +145,14 @@ fun UpdateReportScreen(navController: NavHostController, id: String) {
 
             Button(
                 onClick = {
-                    if (name.isBlank() || age.isBlank() || location.isBlank()) {
+                    if (name.isBlank() || age.isBlank() || location.isBlank() || emergencyContact.isBlank()) {
                         Toast.makeText(context, "Please fill required fields", Toast.LENGTH_SHORT).show()
                     } else {
-                        reportViewModel.updateReport(id, name, age, location, description, status, imageUri, currentImageUrl)
+                        reportViewModel.updateReport(
+                            id, name, age, gender, hairColor, distinguishingFeatures,
+                            dateMissing, timeMissing, location, latitude, longitude,
+                            description, emergencyContact, status, imageUri, currentImageUrl
+                        )
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),
@@ -152,6 +160,21 @@ fun UpdateReportScreen(navController: NavHostController, id: String) {
                 shape = RoundedCornerShape(8.dp)
             ) {
                 Text(if(status == "Found") "MARK AS REUNITED" else "SAVE CHANGES", fontWeight = FontWeight.Bold)
+            }
+            
+            Spacer(modifier = Modifier.height(8.dp))
+            
+            // Poster Generator Button
+            OutlinedButton(
+                onClick = { 
+                    navController.navigate("poster/$id")
+                },
+                modifier = Modifier.fillMaxWidth(),
+                border = ButtonDefaults.outlinedButtonBorder.copy(width = 2.dp)
+            ) {
+                Icon(Icons.Default.PictureAsPdf, contentDescription = null)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("GENERATE MISSING POSTER", fontWeight = FontWeight.Bold)
             }
         }
     }

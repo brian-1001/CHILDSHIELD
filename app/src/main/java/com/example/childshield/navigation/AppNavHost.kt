@@ -13,6 +13,7 @@ import com.example.childshield.screens.login.LoginScreen
 import com.example.childshield.screens.profile.ProfileScreen
 import com.example.childshield.screens.register.RegisterScreen
 import com.example.childshield.screens.reports.AddReportScreen
+import com.example.childshield.screens.reports.PosterScreen
 import com.example.childshield.screens.reports.ReportListScreen
 import com.example.childshield.screens.reports.UpdateReportScreen
 import com.example.childshield.screens.settings.SettingsScreen
@@ -53,6 +54,13 @@ fun AppNavHost(
         ) { backStackEntry ->
             val id = backStackEntry.arguments?.getString("id") ?: ""
             UpdateReportScreen(navController, id)
+        }
+        composable(
+            route = "poster/{id}",
+            arguments = listOf(navArgument("id") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val id = backStackEntry.arguments?.getString("id") ?: ""
+            PosterScreen(navController, id)
         }
         composable(Route.Profile.path) {
             ProfileScreen(navController)

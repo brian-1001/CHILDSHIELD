@@ -36,12 +36,20 @@ class ReportViewModel(
         imageUri: Uri?,
         name: String,
         age: String,
+        gender: String,
+        hairColor: String,
+        distinguishingFeatures: String,
+        dateMissing: String,
+        timeMissing: String,
         location: String,
+        latitude: Double?,
+        longitude: Double?,
         description: String,
+        emergencyContact: String,
         status: String
     ) {
-        if (name.isBlank() || age.isBlank() || location.isBlank() || description.isBlank()) {
-            Toast.makeText(context, "Please fill all fields", Toast.LENGTH_SHORT).show()
+        if (name.isBlank() || age.isBlank() || location.isBlank() || description.isBlank() || emergencyContact.isBlank()) {
+            Toast.makeText(context, "Please fill all required fields", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -61,8 +69,16 @@ class ReportViewModel(
                     id = ref.key ?: "",
                     name = name,
                     age = age.toIntOrNull() ?: 0,
+                    gender = gender,
+                    hairColor = hairColor,
+                    distinguishingFeatures = distinguishingFeatures,
+                    dateMissing = dateMissing,
+                    timeMissing = timeMissing,
                     lastSeenLocation = location,
+                    latitude = latitude,
+                    longitude = longitude,
                     description = description,
+                    emergencyContact = emergencyContact,
                     status = status,
                     imageUrl = imageUrl,
                     reporterId = userId
@@ -171,8 +187,16 @@ class ReportViewModel(
         reportId: String,
         name: String,
         age: String,
+        gender: String,
+        hairColor: String,
+        distinguishingFeatures: String,
+        dateMissing: String,
+        timeMissing: String,
         location: String,
+        latitude: Double?,
+        longitude: Double?,
         description: String,
+        emergencyContact: String,
         status: String,
         imageUri: Uri?,
         currentImageUrl: String
@@ -196,11 +220,19 @@ class ReportViewModel(
                         currentImageUrl
                     }
 
-                    val updateData = mapOf(
+                    val updateData = mutableMapOf<String, Any?>(
                         "name" to name,
                         "age" to (age.toIntOrNull() ?: 0),
+                        "gender" to gender,
+                        "hairColor" to hairColor,
+                        "distinguishingFeatures" to distinguishingFeatures,
+                        "dateMissing" to dateMissing,
+                        "timeMissing" to timeMissing,
                         "lastSeenLocation" to location,
+                        "latitude" to latitude,
+                        "longitude" to longitude,
                         "description" to description,
+                        "emergencyContact" to emergencyContact,
                         "status" to status,
                         "imageUrl" to imageUrl
                     )
