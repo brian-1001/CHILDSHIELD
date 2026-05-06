@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.childshield.data.ReportViewModel
 import com.example.childshield.models.ChildModel
+import com.google.firebase.auth.FirebaseAuth
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -37,11 +38,16 @@ fun UpdateReportScreen(navController: NavHostController, id: String) {
     var status by remember { mutableStateOf("Missing") }
     var currentImageUrl by remember { mutableStateOf("") }
     var imageUri by remember { mutableStateOf<Uri?>(null) }
+    val currentUserId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
 
     // Automatically load data for the child
     LaunchedEffect(id) {
         reportViewModel.getReportById(id) { child ->
             child?.let {
+                if (it.reporterId != currentUserId) {
+                    Toast.makeText(context, "Unauthorized access", Toast.LENGTH_SHORT).show()
+                    navController.popBackStack()
+                }
                 name = it.name
                 age = it.age.toString()
                 location = it.lastSeenLocation

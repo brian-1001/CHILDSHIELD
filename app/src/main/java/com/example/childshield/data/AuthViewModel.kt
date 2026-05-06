@@ -58,18 +58,31 @@ class AuthViewModel(var navController: NavHostController, var context: Context) 
     }
 
     fun login(email: String, pass: String) {
-        if (email.isBlank() || pass.isBlank()) {
+        val trimmedEmail = email.trim()
+        val trimmedPass = pass.trim()
+
+        if (trimmedEmail.isBlank() || trimmedPass.isBlank()) {
             Toast.makeText(context, "Please fill all fields", Toast.LENGTH_SHORT).show()
             return
         }
 
-        mAuth.signInWithEmailAndPassword(email, pass).addOnCompleteListener { task ->
+        mAuth.signInWithEmailAndPassword(trimmedEmail, trimmedPass).addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 Toast.makeText(context, "Login successful", Toast.LENGTH_SHORT).show()
                 navController.navigate(Route.Dashboard.path)
             } else {
-                // If CONFIGURATION_NOT_FOUND, it usually means Email/Password is disabled in Firebase Console
-                val errorMessage = task.exception?.message ?: "Login failed"
+                val exception = task.exception
+                val message = exception?.message ?: ""
+                
+                val errorMessage = when {
+                    message.contains("invalid-credential") || message.contains("incorrect") -> 
+                        "Incorrect email or password. Please check your typing."
+                    message.contains("malformed") -> 
+                        "The email address is not formatted correctly."
+                    message.contains("user-not-found") -> 
+                        "Account not found. Please register first."
+                    else -> "Authentication failed. Ensure you have an active account."
+                }
                 Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
             }
         }

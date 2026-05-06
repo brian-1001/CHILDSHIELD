@@ -6,14 +6,6 @@
         <entry key="Firebase Crashlytics">
           <value>
             <InsightsFilterSettings>
-              <option name="connection">
-                <ConnectionSetting>
-                  <option name="appId" value="com.example.childshield" />
-                  <option name="mobileSdkAppId" value="1:805396076733:android:b37352cdfd2053fd517fd4" />
-                  <option name="projectId" value="childshield01-70c1c" />
-                  <option name="projectNumber" value="805396076733" />
-                </ConnectionSetting>
-              </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />
               <option name="timeIntervalDays" value="THIRTY_DAYS" />
               <option name="visibilityType" value="ALL" />

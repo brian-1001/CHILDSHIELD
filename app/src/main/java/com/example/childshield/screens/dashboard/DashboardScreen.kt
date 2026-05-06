@@ -69,6 +69,7 @@ import coil.compose.AsyncImage
 import com.example.childshield.data.AuthViewModel
 import com.example.childshield.data.User
 import com.example.childshield.navigation.Route
+import com.google.firebase.auth.FirebaseAuth
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -77,6 +78,7 @@ fun DashboardScreen(navController: NavHostController){
     val myauth = AuthViewModel(navController, context)
     val reportViewModel = ReportViewModel(navController, context)
     var searchQuery by remember { mutableStateOf("") }
+    val currentUserId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
 
     Scaffold(
         topBar = {
@@ -357,12 +359,17 @@ fun DashboardScreen(navController: NavHostController){
                         it.name.contains(searchQuery, ignoreCase = true) || 
                         it.lastSeenLocation.contains(searchQuery, ignoreCase = true) 
                     }.take(5).forEach { child ->
+                        val isOwner = child.reporterId == currentUserId
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(160.dp)
                                 .clickable {
-                                    navController.navigate(Route.UpdateReport.path + "/${child.id}")
+                                    if (isOwner) {
+                                        navController.navigate(Route.UpdateReport.path + "/${child.id}")
+                                    } else {
+                                        Toast.makeText(context, "You can only edit your own reports", Toast.LENGTH_SHORT).show()
+                                    }
                                 },
                             shape = RoundedCornerShape(16.dp),
                             elevation = CardDefaults.cardElevation(8.dp),

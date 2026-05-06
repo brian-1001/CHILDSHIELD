@@ -29,6 +29,7 @@ import coil.compose.AsyncImage
 import com.example.childshield.data.ReportViewModel
 import com.example.childshield.models.ChildModel
 import com.example.childshield.navigation.Route
+import com.google.firebase.auth.FirebaseAuth
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -37,6 +38,7 @@ fun ReportListScreen(navController: NavHostController) {
     val reportViewModel = ReportViewModel(navController, context)
     val reports = remember { mutableStateListOf<ChildModel>() }
     val emptyReportState = remember { mutableStateOf(ChildModel()) }
+    val currentUserId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
 
     LaunchedEffect(Unit) {
         reportViewModel.allReports(emptyReportState, reports)
@@ -45,7 +47,7 @@ fun ReportListScreen(navController: NavHostController) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Missing Children List", color = Color.White) },
+                title = { Text("My Reported Cases", color = Color.White) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "back", tint = Color.White)
@@ -61,9 +63,11 @@ fun ReportListScreen(navController: NavHostController) {
                 .padding(paddingValues)
                 .background(Color(0xFFF5F5F5))
         ) {
-            if (reports.isEmpty()) {
+            val myReports = reports.filter { it.reporterId == currentUserId }
+
+            if (myReports.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator(color = Color.Blue)
+                    Text("You haven't reported any cases yet.")
                 }
             } else {
                 LazyColumn(
@@ -71,7 +75,7 @@ fun ReportListScreen(navController: NavHostController) {
                     contentPadding = PaddingValues(16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    items(reports) { child ->
+                    items(myReports) { child ->
                         ReportCard(child, navController, reportViewModel)
                     }
                 }

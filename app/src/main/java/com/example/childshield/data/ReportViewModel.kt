@@ -139,12 +139,21 @@ class ReportViewModel(
     }
 
     fun deleteReport(reportId: String) {
-        databaseReference.child(reportId).removeValue().addOnCompleteListener {
-            if (it.isSuccessful) {
-                Toast.makeText(context, "Report deleted", Toast.LENGTH_SHORT).show()
-                navController.popBackStack()
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        val userId = currentUser?.uid ?: ""
+
+        getReportById(reportId) { report ->
+            if (report?.reporterId == userId) {
+                databaseReference.child(reportId).removeValue().addOnCompleteListener {
+                    if (it.isSuccessful) {
+                        Toast.makeText(context, "Report deleted", Toast.LENGTH_SHORT).show()
+                        navController.popBackStack()
+                    } else {
+                        Toast.makeText(context, "Error deleting report", Toast.LENGTH_SHORT).show()
+                    }
+                }
             } else {
-                Toast.makeText(context, "Error deleting report", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Unauthorized: Only the reporter can delete this", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -168,34 +177,46 @@ class ReportViewModel(
         imageUri: Uri?,
         currentImageUrl: String
     ) {
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val imageUrl = if (imageUri != null) {
-                    uploadToCloudinary(context, imageUri)
-                } else {
-                    currentImageUrl
-                }
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        val userId = currentUser?.uid ?: ""
 
-                val updateData = mapOf(
-                    "name" to name,
-                    "age" to (age.toIntOrNull() ?: 0),
-                    "lastSeenLocation" to location,
-                    "description" to description,
-                    "status" to status,
-                    "imageUrl" to imageUrl
-                )
-
-                databaseReference.child(reportId).updateChildren(updateData).addOnCompleteListener {
-                    if (it.isSuccessful) {
-                        Toast.makeText(context, "Report updated", Toast.LENGTH_SHORT).show()
-                        navController.navigate(Route.ReportList.path)
-                    } else {
-                        Toast.makeText(context, "Error updating report", Toast.LENGTH_SHORT).show()
-                    }
-                }
-            } catch (e: Exception) {
+        getReportById(reportId) { report ->
+            if (report?.reporterId != userId) {
                 CoroutineScope(Dispatchers.Main).launch {
-                    Toast.makeText(context, "Update failed: ${e.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Unauthorized: Only the reporter can update this", Toast.LENGTH_SHORT).show()
+                }
+                return@getReportById
+            }
+
+            CoroutineScope(Dispatchers.IO).launch {
+                try {
+                    val imageUrl = if (imageUri != null) {
+                        uploadToCloudinary(context, imageUri)
+                    } else {
+                        currentImageUrl
+                    }
+
+                    val updateData = mapOf(
+                        "name" to name,
+                        "age" to (age.toIntOrNull() ?: 0),
+                        "lastSeenLocation" to location,
+                        "description" to description,
+                        "status" to status,
+                        "imageUrl" to imageUrl
+                    )
+
+                    databaseReference.child(reportId).updateChildren(updateData).addOnCompleteListener {
+                        if (it.isSuccessful) {
+                            Toast.makeText(context, "Report updated", Toast.LENGTH_SHORT).show()
+                            navController.navigate(Route.ReportList.path)
+                        } else {
+                            Toast.makeText(context, "Error updating report", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                } catch (e: Exception) {
+                    CoroutineScope(Dispatchers.Main).launch {
+                        Toast.makeText(context, "Update failed: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
         }

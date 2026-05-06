@@ -1,5 +1,6 @@
 package com.example.childshield.screens.login
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -126,7 +127,11 @@ fun LoginScreen(navController: NavHostController) {
 
         Button(
             onClick = {
-                myauth.login(email, password)
+                if (!email.contains("@") || !email.contains(".")) {
+                    Toast.makeText(context, "Please enter a valid email", Toast.LENGTH_SHORT).show()
+                } else {
+                    myauth.login(email, password)
+                }
             },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(
