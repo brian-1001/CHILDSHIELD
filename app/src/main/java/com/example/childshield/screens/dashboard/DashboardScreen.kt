@@ -3,6 +3,7 @@ package com.example.childshield.screens.dashboard
 import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -60,12 +61,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.ui.text.font.FontFamily
 import com.example.childshield.data.AuthViewModel
 import com.example.childshield.data.User
 import com.example.childshield.navigation.Route
@@ -214,16 +220,18 @@ fun DashboardScreen(navController: NavHostController){
                 reportViewModel.allReports(emptyReportState, reports)
             }
 
+            // Welcoming Message after Search Bar
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+                    .padding(16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Card(
                     shape = CircleShape,
-                    modifier = Modifier.size(50.dp),
-                    elevation = CardDefaults.cardElevation(2.dp)
+                    modifier = Modifier.size(60.dp),
+                    elevation = CardDefaults.cardElevation(4.dp),
+                    border = BorderStroke(2.dp, Color.Red)
                 ) {
                     if (user?.imageUrl?.isNotEmpty() == true) {
                         AsyncImage(
@@ -236,34 +244,49 @@ fun DashboardScreen(navController: NavHostController){
                         Icon(
                             imageVector = Icons.Default.Person,
                             contentDescription = "Default Profile",
-                            modifier = Modifier.fillMaxSize().padding(10.dp)
+                            modifier = Modifier.fillMaxSize().padding(12.dp),
+                            tint = Color.Gray
                         )
                     }
                 }
-                Text(
-                    text = "Welcome, ${user?.name ?: "Loading..."} ",
-                    modifier = Modifier.padding(start = 12.dp)
-                )
+                
+                Column(modifier = Modifier.padding(start = 16.dp)) {
+                    Text(
+                        text = "Hello, ${user?.name ?: "User"}!",
+                        fontSize = 22.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = Color.Black
+                    )
+                    Text(
+                        text = "Together, we can keep our children safe.",
+                        fontSize = 14.sp,
+                        color = Color.Gray,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
             }
             
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Card 1: Add Report
+                val uniformColor = Color(0xFF0D47A1) // Deep Professional Blue
+
+                // Card 1: Add Report (Centered with reduced width)
                 Card(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(150.dp)
+                        .fillMaxWidth(0.9f)
+                        .height(120.dp)
                         .clickable {
                             navController.navigate(Route.AddReport.path)
                         },
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(20.dp),
                     elevation = CardDefaults.cardElevation(8.dp),
                     colors = CardDefaults.cardColors(
-                        containerColor = Color.Red, // Meaningful color for adding reports
+                        containerColor = uniformColor,
                         contentColor = Color.White
                     )
                 ) {
@@ -272,187 +295,223 @@ fun DashboardScreen(navController: NavHostController){
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
-                        Text("REPORT A CASE", color = Color.White, fontSize = 24.sp, fontWeight = FontWeight.Bold)
-                        Text("Urgent Help Needed", color = Color.White.copy(alpha = 0.8f), fontSize = 14.sp)
                         Icon(
                             imageVector = Icons.Default.Add,
                             contentDescription = "icon",
-                            modifier = Modifier.size(40.dp)
+                            modifier = Modifier.size(28.dp)
                         )
+                        Text("REPORT A CASE", fontSize = 18.sp, fontWeight = FontWeight.ExtraBold)
+                        Text("Urgent Help Needed", fontSize = 11.sp, color = Color.White.copy(alpha = 0.8f))
                     }
                 }
 
-                // Card 2: Report List
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(150.dp)
-                        .clickable {
-                            navController.navigate(Route.ReportList.path)
-                        },
-                    shape = RoundedCornerShape(16.dp),
-                    elevation = CardDefaults.cardElevation(8.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = Color.Blue,
-                        contentColor = Color.White
-                    )
+                // Row for Secondary Actions (View All & Profile)
+                Row(
+                    modifier = Modifier.fillMaxWidth(0.95f),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Text("VIEW ALL MISSING CASES", color = Color.White, fontSize = 24.sp, fontWeight = FontWeight.Bold)
-                        Text("Help identify children", color = Color.White.copy(alpha = 0.8f), fontSize = 14.sp)
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.List,
-                            contentDescription = "icon",
-                            modifier = Modifier.size(40.dp)
+                    // Card 2: Report List
+                    Card(
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(120.dp)
+                            .clickable {
+                                navController.navigate(Route.ReportList.path)
+                            },
+                        shape = RoundedCornerShape(20.dp),
+                        elevation = CardDefaults.cardElevation(8.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = uniformColor,
+                            contentColor = Color.White
                         )
-                    }
-                }
-
-                // Card 3: My Profile / My Reports
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(150.dp)
-                        .clickable {
-                            navController.navigate(Route.Profile.path)
-                        },
-                    shape = RoundedCornerShape(16.dp),
-                    elevation = CardDefaults.cardElevation(8.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = Color(0xFF424242), // Dark gray/black
-                        contentColor = Color.White
-                    )
-                ) {
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
                     ) {
-                        Text("MY PROFILE & REPORTS", color = Color.White, fontSize = 24.sp, fontWeight = FontWeight.Bold)
-                        Text("Track your submissions", color = Color.White.copy(alpha = 0.8f), fontSize = 14.sp)
-                        Icon(
-                            imageVector = Icons.Default.Person,
-                            contentDescription = "icon",
-                            modifier = Modifier.size(40.dp)
-                        )
-                    }
-                }
-
-                // New Section Header
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = "Recently Reported Children",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Red // Use Red for urgency
-                )
-
-                // Recently Reported Children Cards
-                if (reports.isEmpty()) {
-                    Text("No reports found", modifier = Modifier.padding(vertical = 8.dp))
-                } else {
-                    reports.filter { 
-                        it.name.contains(searchQuery, ignoreCase = true) || 
-                        it.lastSeenLocation.contains(searchQuery, ignoreCase = true) 
-                    }.take(5).forEach { child ->
-                        val isOwner = child.reporterId == currentUserId
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(160.dp)
-                                .clickable {
-                                    if (isOwner) {
-                                        navController.navigate(Route.UpdateReport.path + "/${child.id}")
-                                    } else {
-                                        Toast.makeText(context, "You can only edit your own reports", Toast.LENGTH_SHORT).show()
-                                    }
-                                },
-                            shape = RoundedCornerShape(16.dp),
-                            elevation = CardDefaults.cardElevation(8.dp),
-                            colors = CardDefaults.cardColors(
-                                containerColor = if (child.status == "Found") Color(0xFFE8F5E9) else Color(0xFFFAFAFA),
-                                contentColor = Color.Black
-                            )
+                        Column(
+                            modifier = Modifier.fillMaxSize().padding(8.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
                         ) {
-                            Row(
-                                modifier = Modifier.fillMaxSize().padding(12.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                // Column 1: Child's Photo
-                                Box(modifier = Modifier.size(120.dp)) {
-                                    Card(
-                                        shape = RoundedCornerShape(12.dp),
-                                        modifier = Modifier.fillMaxSize(),
-                                        elevation = CardDefaults.cardElevation(4.dp)
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.List,
+                                contentDescription = "icon",
+                                modifier = Modifier.size(28.dp)
+                            )
+                            Text("VIEW CASES", fontSize = 14.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
+                            Text("Identify children", fontSize = 10.sp, color = Color.White.copy(alpha = 0.8f))
+                        }
+                    }
+
+                    // Card 3: My Profile / My Reports
+                    Card(
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(120.dp)
+                            .clickable {
+                                navController.navigate(Route.Profile.path)
+                            },
+                        shape = RoundedCornerShape(20.dp),
+                        elevation = CardDefaults.cardElevation(8.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = uniformColor,
+                            contentColor = Color.White
+                        )
+                    ) {
+                        Column(
+                            modifier = Modifier.fillMaxSize().padding(8.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Person,
+                                contentDescription = "icon",
+                                modifier = Modifier.size(28.dp)
+                            )
+                            Text("MY PROFILE", fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                            Text("Track entries", fontSize = 10.sp, color = Color.White.copy(alpha = 0.8f))
+                        }
+                    }
+                }
+
+                // New Section Header with Dropdown
+                var isReportsVisible by remember { mutableStateOf(true) }
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { isReportsVisible = !isReportsVisible }
+                        .padding(vertical = 8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Recently Reported Children",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Red
+                    )
+                    Icon(
+                        imageVector = if (isReportsVisible) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                        contentDescription = "toggle reports",
+                        tint = Color.Red
+                    )
+                }
+
+                // Recently Reported Children Cards (Animated)
+                AnimatedVisibility(visible = isReportsVisible) {
+                    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                        if (reports.isEmpty()) {
+                            Text("No reports found", modifier = Modifier.padding(vertical = 8.dp))
+                        } else {
+                            reports.filter {
+                                it.name.contains(searchQuery, ignoreCase = true) ||
+                                        it.lastSeenLocation.contains(searchQuery, ignoreCase = true)
+                            }.take(5).forEach { child ->
+                                val isOwner = child.reporterId == currentUserId
+                                Card(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(160.dp)
+                                        .clickable {
+                                            if (isOwner) {
+                                                navController.navigate(Route.UpdateReport.path + "/${child.id}")
+                                            } else {
+                                                Toast.makeText(
+                                                    context,
+                                                    "You can only edit your own reports",
+                                                    Toast.LENGTH_SHORT
+                                                ).show()
+                                            }
+                                        },
+                                    shape = RoundedCornerShape(16.dp),
+                                    elevation = CardDefaults.cardElevation(8.dp),
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = if (child.status == "Found") Color(0xFFE8F5E9) else Color(0xFFFAFAFA),
+                                        contentColor = Color.Black
+                                    )
+                                ) {
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .padding(12.dp),
+                                        verticalAlignment = Alignment.CenterVertically
                                     ) {
-                                        if (child.imageUrl.isNotEmpty()) {
-                                            AsyncImage(
-                                                model = child.imageUrl,
-                                                contentDescription = "Child Photo",
+                                        // Column 1: Child's Photo
+                                        Box(modifier = Modifier.size(120.dp)) {
+                                            Card(
+                                                shape = RoundedCornerShape(12.dp),
                                                 modifier = Modifier.fillMaxSize(),
-                                                contentScale = ContentScale.Crop
-                                            )
-                                        } else {
-                                            Icon(
-                                                imageVector = Icons.Default.Person,
-                                                contentDescription = "No Photo",
-                                                modifier = Modifier.fillMaxSize().padding(25.dp),
-                                                tint = Color.Gray
-                                            )
+                                                elevation = CardDefaults.cardElevation(4.dp)
+                                            ) {
+                                                if (child.imageUrl.isNotEmpty()) {
+                                                    AsyncImage(
+                                                        model = child.imageUrl,
+                                                        contentDescription = "Child Photo",
+                                                        modifier = Modifier.fillMaxSize(),
+                                                        contentScale = ContentScale.Crop
+                                                    )
+                                                } else {
+                                                    Icon(
+                                                        imageVector = Icons.Default.Person,
+                                                        contentDescription = "No Photo",
+                                                        modifier = Modifier
+                                                            .fillMaxSize()
+                                                            .padding(25.dp),
+                                                        tint = Color.Gray
+                                                    )
+                                                }
+                                            }
+
+                                            if (child.status != "Found") {
+                                                Surface(
+                                                    color = Color.Red,
+                                                    shape = RoundedCornerShape(bottomEnd = 12.dp),
+                                                    modifier = Modifier.align(Alignment.TopStart)
+                                                ) {
+                                                    Text(
+                                                        "🚨 URGENT",
+                                                        color = Color.White,
+                                                        modifier = Modifier.padding(
+                                                            horizontal = 4.dp,
+                                                            vertical = 2.dp
+                                                        ),
+                                                        fontSize = 8.sp,
+                                                        fontWeight = FontWeight.Bold
+                                                    )
+                                                }
+                                            }
                                         }
-                                    }
-                                    
-                                    if (child.status != "Found") {
-                                        Surface(
-                                            color = Color.Red,
-                                            shape = RoundedCornerShape(bottomEnd = 12.dp),
-                                            modifier = Modifier.align(Alignment.TopStart)
+
+                                        Spacer(modifier = Modifier.width(16.dp))
+
+                                        // Column 2: Child's details
+                                        Column(
+                                            modifier = Modifier.weight(1f),
+                                            verticalArrangement = Arrangement.Center
                                         ) {
                                             Text(
-                                                "🚨 URGENT",
-                                                color = Color.White,
-                                                modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp),
-                                                fontSize = 8.sp,
-                                                fontWeight = FontWeight.Bold
+                                                text = child.name.uppercase(),
+                                                fontSize = 18.sp,
+                                                fontWeight = FontWeight.Bold,
+                                                color = if (child.status == "Found") Color(0xFF2E7D32) else Color.Red
                                             )
+                                            Text(
+                                                text = "AGE: ${child.age} YEARS",
+                                                fontSize = 14.sp,
+                                                fontWeight = FontWeight.SemiBold
+                                            )
+                                            Text(
+                                                text = "📍 ${child.lastSeenLocation}",
+                                                fontSize = 13.sp,
+                                                color = Color.DarkGray
+                                            )
+                                            if (child.status == "Found") {
+                                                Text(
+                                                    "REUNITED ✅",
+                                                    color = Color(0xFF2E7D32),
+                                                    fontWeight = FontWeight.Bold,
+                                                    fontSize = 12.sp
+                                                )
+                                            }
                                         }
-                                    }
-                                }
-
-                                Spacer(modifier = Modifier.width(16.dp))
-
-                                // Column 2: Child's details
-                                Column(
-                                    modifier = Modifier.weight(1f),
-                                    verticalArrangement = Arrangement.Center
-                                ) {
-                                    Text(
-                                        text = child.name.uppercase(),
-                                        fontSize = 18.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        color = if (child.status == "Found") Color(0xFF2E7D32) else Color.Red
-                                    )
-                                    Text(
-                                        text = "AGE: ${child.age} YEARS",
-                                        fontSize = 14.sp,
-                                        fontWeight = FontWeight.SemiBold
-                                    )
-                                    Text(
-                                        text = "📍 ${child.lastSeenLocation}",
-                                        fontSize = 13.sp,
-                                        color = Color.DarkGray
-                                    )
-                                    if (child.status == "Found") {
-                                        Text(
-                                            "REUNITED ✅",
-                                            color = Color(0xFF2E7D32),
-                                            fontWeight = FontWeight.Bold,
-                                            fontSize = 12.sp
-                                        )
                                     }
                                 }
                             }
