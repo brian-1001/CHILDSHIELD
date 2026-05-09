@@ -24,6 +24,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.childshield.data.AuthViewModel
 import com.example.childshield.navigation.Route
+import com.example.childshield.ui.theme.SecurityBlue
 
 @Composable
 fun RegisterScreen(navController: NavHostController) {
@@ -47,7 +48,7 @@ fun RegisterScreen(navController: NavHostController) {
         Text(
             text = "REGISTER",
             fontSize = 40.sp,
-            color = Color.Blue,
+            color = SecurityBlue,
             fontFamily = FontFamily.SansSerif,
             fontWeight = FontWeight.Bold
         )
@@ -56,14 +57,16 @@ fun RegisterScreen(navController: NavHostController) {
         OutlinedTextField(
             value = name,
             onValueChange = { name = it },
-            label = { Text("Full Name", color = Color.Blue) },
+            label = { Text("Full Name", color = SecurityBlue) },
             singleLine = true,
-            leadingIcon = { Icon(Icons.Default.Person, contentDescription = null, tint = Color.Blue) },
+            leadingIcon = { Icon(Icons.Default.Person, contentDescription = null, tint = SecurityBlue) },
             modifier = Modifier.fillMaxWidth(),
             colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = Color.Black,
+                focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black,
+                focusedBorderColor = SecurityBlue,
                 unfocusedBorderColor = Color.Black,
-                cursorColor = Color.Black
+                cursorColor = SecurityBlue
             )
         )
 
@@ -72,14 +75,16 @@ fun RegisterScreen(navController: NavHostController) {
         OutlinedTextField(
             value = email,
             onValueChange = { email = it },
-            label = { Text("Email", color = Color.Blue) },
+            label = { Text("Email", color = SecurityBlue) },
             singleLine = true,
-            leadingIcon = { Icon(Icons.Default.Email, contentDescription = null, tint = Color.Blue) },
+            leadingIcon = { Icon(Icons.Default.Email, contentDescription = null, tint = SecurityBlue) },
             modifier = Modifier.fillMaxWidth(),
             colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = Color.Black,
+                focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black,
+                focusedBorderColor = SecurityBlue,
                 unfocusedBorderColor = Color.Black,
-                cursorColor = Color.Black
+                cursorColor = SecurityBlue
             )
         )
 
@@ -88,15 +93,17 @@ fun RegisterScreen(navController: NavHostController) {
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
-            label = { Text("Password", color = Color.Blue) },
+            label = { Text("Password", color = SecurityBlue) },
             singleLine = true,
-            leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null, tint = Color.Blue) },
+            leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null, tint = SecurityBlue) },
             modifier = Modifier.fillMaxWidth(),
             visualTransformation = PasswordVisualTransformation(),
             colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = Color.Black,
+                focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black,
+                focusedBorderColor = SecurityBlue,
                 unfocusedBorderColor = Color.Black,
-                cursorColor = Color.Black
+                cursorColor = SecurityBlue
             )
         )
 
@@ -105,15 +112,17 @@ fun RegisterScreen(navController: NavHostController) {
         OutlinedTextField(
             value = confpassword,
             onValueChange = { confpassword = it },
-            label = { Text("Confirm Password", color = Color.Blue) },
+            label = { Text("Confirm Password", color = SecurityBlue) },
             singleLine = true,
-            leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null, tint = Color.Blue) },
+            leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null, tint = SecurityBlue) },
             modifier = Modifier.fillMaxWidth(),
             visualTransformation = PasswordVisualTransformation(),
             colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = Color.Black,
+                focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black,
+                focusedBorderColor = SecurityBlue,
                 unfocusedBorderColor = Color.Black,
-                cursorColor = Color.Black
+                cursorColor = SecurityBlue
             )
         )
 
@@ -124,7 +133,7 @@ fun RegisterScreen(navController: NavHostController) {
                 myauth.signup(name, email, password, confpassword)
             },
             modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(containerColor = Color.Blue)
+            colors = ButtonDefaults.buttonColors(containerColor = SecurityBlue)
         ) {
             Text("REGISTER", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Color.White)
         }

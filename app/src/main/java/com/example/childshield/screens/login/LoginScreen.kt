@@ -43,6 +43,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.childshield.R
 import com.example.childshield.data.AuthViewModel
 import com.example.childshield.navigation.Route
+import com.example.childshield.ui.theme.SecurityBlue
 
 @Composable
 fun LoginScreen(navController: NavHostController) {
@@ -62,7 +63,7 @@ fun LoginScreen(navController: NavHostController) {
         Text(
             text = "LOGIN",
             fontSize = 40.sp,
-            color = Color.Blue,
+            color = SecurityBlue,
             fontFamily = FontFamily.SansSerif,
             fontWeight = FontWeight.Bold
         )
@@ -87,16 +88,18 @@ fun LoginScreen(navController: NavHostController) {
                 Icon(
                     imageVector = Icons.Default.Email,
                     contentDescription = "email icon",
-                    tint = Color.Blue
+                    tint = SecurityBlue
                 )
             },
             modifier = Modifier.fillMaxWidth(),
             colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = Color.Black,
+                focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black,
+                focusedBorderColor = SecurityBlue,
                 unfocusedBorderColor = Color.Black,
-                focusedLabelColor = Color.Blue,
-                unfocusedLabelColor = Color.Blue,
-                cursorColor = Color.Black
+                focusedLabelColor = SecurityBlue,
+                unfocusedLabelColor = SecurityBlue,
+                cursorColor = SecurityBlue
             )
         )
 
@@ -109,17 +112,19 @@ fun LoginScreen(navController: NavHostController) {
                 Icon(
                     imageVector = Icons.Default.Lock,
                     contentDescription = "password icon",
-                    tint = Color.Blue
+                    tint = SecurityBlue
                 )
             },
             modifier = Modifier.fillMaxWidth(),
             visualTransformation = PasswordVisualTransformation(),
             colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = Color.Black,
+                focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black,
+                focusedBorderColor = SecurityBlue,
                 unfocusedBorderColor = Color.Black,
-                focusedLabelColor = Color.Blue,
-                unfocusedLabelColor = Color.Blue,
-                cursorColor = Color.Black
+                focusedLabelColor = SecurityBlue,
+                unfocusedLabelColor = SecurityBlue,
+                cursorColor = SecurityBlue
             )
         )
 
@@ -135,7 +140,7 @@ fun LoginScreen(navController: NavHostController) {
             },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Blue,
+                containerColor = SecurityBlue,
                 contentColor = Color.White
             )
         ) {

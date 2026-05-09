@@ -38,10 +38,15 @@ class AuthViewModel(var navController: NavHostController, var context: Context) 
         mAuth.createUserWithEmailAndPassword(email, pass).addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 val currentUser = mAuth.currentUser
-                val userId = currentUser?.uid
-                val userData = User(name, email, userId ?: "")
+                val userId = currentUser?.uid ?: ""
+                val userData = User(
+                    name = name,
+                    email = email,
+                    userId = userId,
+                    imageUrl = ""
+                )
                 val reference = FirebaseDatabase.getInstance().getReference()
-                    .child("Users").child(userId!!)
+                    .child("Users").child(userId)
 
                 reference.setValue(userData).addOnCompleteListener { task2 ->
                     if (task2.isSuccessful) {
@@ -72,16 +77,21 @@ class AuthViewModel(var navController: NavHostController, var context: Context) 
                 navController.navigate(Route.Dashboard.path)
             } else {
                 val exception = task.exception
-                val message = exception?.message ?: ""
+                val message = exception?.message?.lowercase() ?: ""
+                
+                // Log for developer debugging (visible in Logcat)
+                println("Auth Error: $message")
                 
                 val errorMessage = when {
-                    message.contains("invalid-credential") || message.contains("incorrect") -> 
+                    message.contains("network") || message.contains("timeout") -> 
+                        "Network error. Please check your internet connection."
+                    message.contains("invalid-credential") || message.contains("incorrect") || message.contains("password") -> 
                         "Incorrect email or password. Please check your typing."
                     message.contains("malformed") -> 
                         "The email address is not formatted correctly."
-                    message.contains("user-not-found") -> 
+                    message.contains("user-not-found") || message.contains("no user") -> 
                         "Account not found. Please register first."
-                    else -> "Authentication failed. Ensure you have an active account."
+                    else -> "Authentication failed: ${exception?.localizedMessage ?: "Ensure you have an active account."}"
                 }
                 Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
             }
@@ -220,8 +230,8 @@ class AuthViewModel(var navController: NavHostController, var context: Context) 
 }
 
 data class User(
-    var name: String = "",
-    var email: String = "",
-    var userid: String = "",
-    var imageUrl: String = ""
+    val name: String = "",
+    val email: String = "",
+    val userId: String = "",
+    val imageUrl: String = ""
 )

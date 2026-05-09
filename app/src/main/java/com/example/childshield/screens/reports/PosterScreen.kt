@@ -25,6 +25,7 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.childshield.data.ReportViewModel
 import com.example.childshield.models.ChildModel
+import com.example.childshield.ui.theme.AlertRed
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -83,7 +84,7 @@ fun PosterScreen(navController: NavHostController, id: String) {
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .border(4.dp, Color.Red, RoundedCornerShape(8.dp)),
+                        .border(4.dp, AlertRed, RoundedCornerShape(8.dp)),
                     colors = CardDefaults.cardColors(containerColor = Color.White),
                     shape = RoundedCornerShape(8.dp),
                     elevation = CardDefaults.cardElevation(10.dp)
@@ -96,7 +97,7 @@ fun PosterScreen(navController: NavHostController, id: String) {
                             "MISSING",
                             fontSize = 48.sp,
                             fontWeight = FontWeight.Black,
-                            color = Color.Red,
+                            color = AlertRed,
                             textAlign = TextAlign.Center
                         )
                         
@@ -137,7 +138,7 @@ fun PosterScreen(navController: NavHostController, id: String) {
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .background(Color.Red)
+                                .background(AlertRed)
                                 .padding(8.dp),
                             contentAlignment = Alignment.Center
                         ) {

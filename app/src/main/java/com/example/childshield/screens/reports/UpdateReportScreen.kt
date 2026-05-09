@@ -25,6 +25,8 @@ import androidx.navigation.NavHostController
 import com.example.childshield.data.ReportViewModel
 import com.example.childshield.models.ChildModel
 import com.example.childshield.navigation.Route
+import com.example.childshield.ui.theme.AlertRed
+import com.example.childshield.ui.theme.SecurityBlue
 import com.google.firebase.auth.FirebaseAuth
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -97,7 +99,7 @@ fun UpdateReportScreen(navController: NavHostController, id: String) {
                        Icon(Icons.Default.Delete, contentDescription = "delete", tint = Color.White)
                    }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Blue)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = SecurityBlue)
             )
         }
     ) { paddingValues ->
@@ -156,7 +158,7 @@ fun UpdateReportScreen(navController: NavHostController, id: String) {
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(containerColor = if(status == "Found") Color(0xFF4CAF50) else Color.Blue),
+                colors = ButtonDefaults.buttonColors(containerColor = if(status == "Found") Color(0xFF4CAF50) else SecurityBlue),
                 shape = RoundedCornerShape(8.dp)
             ) {
                 Text(if(status == "Found") "MARK AS REUNITED" else "SAVE CHANGES", fontWeight = FontWeight.Bold)

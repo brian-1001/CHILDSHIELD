@@ -14,6 +14,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.childshield.data.AuthViewModel
+import com.example.childshield.ui.theme.AlertRed
+import com.example.childshield.ui.theme.SecurityBlue
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -30,7 +32,7 @@ fun SettingsScreen(navController: NavHostController) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "back", tint = Color.White)
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Blue)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = SecurityBlue)
             )
         }
     ) { paddingValues ->
@@ -51,7 +53,7 @@ fun SettingsScreen(navController: NavHostController) {
             Button(
                 onClick = { authViewModel.logout() },
                 modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
+                colors = ButtonDefaults.buttonColors(containerColor = AlertRed),
                 contentPadding = PaddingValues(15.dp)
             ) {
                 Icon(Icons.AutoMirrored.Filled.ExitToApp, contentDescription = null)

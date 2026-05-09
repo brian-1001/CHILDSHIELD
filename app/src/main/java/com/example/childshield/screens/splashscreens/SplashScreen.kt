@@ -22,6 +22,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.childshield.R
 import com.example.childshield.navigation.Route
+import com.example.childshield.ui.theme.SecurityBlue
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.delay
 
@@ -61,7 +62,7 @@ fun SplashScreen(navController: NavHostController){
                     .background(Color.LightGray)
             )
             Text(text = "Welcome to ChildShield",
-                color = Color.Blue,
+                color = SecurityBlue,
                 fontSize = 24.sp
             )
         }

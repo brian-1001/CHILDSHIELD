@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -45,6 +46,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -60,6 +62,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -72,19 +75,24 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import com.example.childshield.data.AuthViewModel
 import com.example.childshield.data.User
 import com.example.childshield.navigation.Route
+import com.example.childshield.ui.theme.AlertRed
+import com.example.childshield.ui.theme.SecurityBlue
 import com.google.firebase.auth.FirebaseAuth
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardScreen(navController: NavHostController){
     val context = LocalContext.current
+    val isPreview = LocalInspectionMode.current
     val myauth = AuthViewModel(navController, context)
     val reportViewModel = ReportViewModel(navController, context)
     var searchQuery by remember { mutableStateOf("") }
-    val currentUserId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
+    val currentUserId = if (isPreview) "" else FirebaseAuth.getInstance().currentUser?.uid ?: ""
 
     Scaffold(
         topBar = {
@@ -92,7 +100,7 @@ fun DashboardScreen(navController: NavHostController){
                 title = { Text("CHILD SHIELD", fontWeight = FontWeight.ExtraBold) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.White,
-                    titleContentColor = Color.Red,
+                    titleContentColor = AlertRed,
                 ),
                 actions = {
                     IconButton(onClick = { Toast.makeText(context, "No new notifications", Toast.LENGTH_SHORT).show() }) {
@@ -108,7 +116,7 @@ fun DashboardScreen(navController: NavHostController){
                         Icon(
                             Icons.AutoMirrored.Filled.ExitToApp,
                             contentDescription = "logout icon",
-                            tint = Color.Red
+                            tint = AlertRed
                         )
                     }
                 }
@@ -121,7 +129,7 @@ fun DashboardScreen(navController: NavHostController){
                     intent.data = Uri.parse("tel:999")
                     context.startActivity(intent)
                 },
-                containerColor = Color.Red,
+                containerColor = AlertRed,
                 contentColor = Color.White
             ) {
                 Icon(Icons.Default.Warning, contentDescription = "Emergency")
@@ -130,10 +138,10 @@ fun DashboardScreen(navController: NavHostController){
 
         bottomBar = {
             BottomAppBar(
-                containerColor = Color.Gray,
-                contentColor = Color.Blue
+                containerColor = Color.White,
+                contentColor = SecurityBlue
             ) {
-                NavigationBar {
+                NavigationBar(containerColor = Color.White) {
                     NavigationBarItem(
                         selected = true,
                         onClick = {},
@@ -143,7 +151,12 @@ fun DashboardScreen(navController: NavHostController){
                                 contentDescription = "Home icon"
                             )
                         },
-                        label = { Text("Home") }
+                        label = { Text("Home") },
+                        colors = NavigationBarItemDefaults.colors(
+                            selectedIconColor = SecurityBlue,
+                            selectedTextColor = SecurityBlue,
+                            indicatorColor = SecurityBlue.copy(alpha = 0.1f)
+                        )
                     )
 
                     NavigationBarItem(
@@ -181,6 +194,24 @@ fun DashboardScreen(navController: NavHostController){
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
         ) {
+            var user by remember { mutableStateOf<User?>(null) }
+            val reports = remember { mutableStateListOf<ChildModel>() }
+            val emptyReportState = remember { mutableStateOf(ChildModel()) }
+
+            // Dynamic Stats Calculation
+            val totalReports = reports.size
+            val resolvedReports = reports.count { it.status == "Found" }
+            val activeReports = reports.count { it.status == "Missing" || it.status.isBlank() }
+
+            LaunchedEffect(Unit) {
+                if (!isPreview) {
+                    myauth.getUserDetails { fetchedUser ->
+                        user = fetchedUser
+                    }
+                    reportViewModel.allReports(emptyReportState, reports)
+                }
+            }
+
             // Stats Overview
             Row(
                 modifier = Modifier
@@ -188,36 +219,9 @@ fun DashboardScreen(navController: NavHostController){
                     .padding(16.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                StatCard("Total", "128", Color.Blue)
-                StatCard("Resolved", "86", Color(0xFF4CAF50)) // Green
-                StatCard("Active", "42", Color.Red)
-            }
-
-            // Quick Search
-            OutlinedTextField(
-                value = searchQuery,
-                onValueChange = { searchQuery = it },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                placeholder = { Text("Search by name or location...") },
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
-                shape = RoundedCornerShape(30.dp),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color.Blue,
-                    unfocusedBorderColor = Color.Gray
-                )
-            )
-
-            var user by remember { mutableStateOf<User?>(null) }
-            val reports = remember { mutableStateListOf<ChildModel>() }
-            val emptyReportState = remember { mutableStateOf(ChildModel()) }
-
-            LaunchedEffect(Unit) {
-                myauth.getUserDetails { fetchedUser ->
-                    user = fetchedUser
-                }
-                reportViewModel.allReports(emptyReportState, reports)
+                StatCard("Total", totalReports.toString(), SecurityBlue)
+                StatCard("Resolved", resolvedReports.toString(), Color(0xFF4CAF50)) // Green for success
+                StatCard("Active", activeReports.toString(), AlertRed)
             }
 
             // Welcoming Message after Search Bar
@@ -231,7 +235,7 @@ fun DashboardScreen(navController: NavHostController){
                     shape = CircleShape,
                     modifier = Modifier.size(60.dp),
                     elevation = CardDefaults.cardElevation(4.dp),
-                    border = BorderStroke(2.dp, Color.Red)
+                    border = BorderStroke(2.dp, AlertRed)
                 ) {
                     if (user?.imageUrl?.isNotEmpty() == true) {
                         AsyncImage(
@@ -270,130 +274,59 @@ fun DashboardScreen(navController: NavHostController){
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                val uniformColor = Color(0xFF0D47A1) // Deep Professional Blue
+                // Button 1: Report a Case
+                DashboardWaterButton(
+                    text = "REPORT A CASE",
+                    subtitle = "Urgent Help Needed",
+                    icon = Icons.Default.Add,
+                    color = SecurityBlue,
+                    onClick = { navController.navigate(Route.AddReport.path) }
+                )
 
-                // Card 1: Add Report (Centered with reduced width)
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth(0.9f)
-                        .height(120.dp)
-                        .clickable {
-                            navController.navigate(Route.AddReport.path)
-                        },
-                    shape = RoundedCornerShape(20.dp),
-                    elevation = CardDefaults.cardElevation(8.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = uniformColor,
-                        contentColor = Color.White
-                    )
-                ) {
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Add,
-                            contentDescription = "icon",
-                            modifier = Modifier.size(28.dp)
-                        )
-                        Text("REPORT A CASE", fontSize = 18.sp, fontWeight = FontWeight.ExtraBold)
-                        Text("Urgent Help Needed", fontSize = 11.sp, color = Color.White.copy(alpha = 0.8f))
-                    }
-                }
+                // Button 2: View All Cases
+                DashboardWaterButton(
+                    text = "VIEW ALL MISSING CASES",
+                    subtitle = "Help identify children",
+                    icon = Icons.AutoMirrored.Filled.List,
+                    color = SecurityBlue,
+                    onClick = { navController.navigate(Route.ReportList.path) }
+                )
 
-                // Row for Secondary Actions (View All & Profile)
-                Row(
-                    modifier = Modifier.fillMaxWidth(0.95f),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    // Card 2: Report List
-                    Card(
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(120.dp)
-                            .clickable {
-                                navController.navigate(Route.ReportList.path)
-                            },
-                        shape = RoundedCornerShape(20.dp),
-                        elevation = CardDefaults.cardElevation(8.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = uniformColor,
-                            contentColor = Color.White
-                        )
-                    ) {
-                        Column(
-                            modifier = Modifier.fillMaxSize().padding(8.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.List,
-                                contentDescription = "icon",
-                                modifier = Modifier.size(28.dp)
-                            )
-                            Text("VIEW CASES", fontSize = 14.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
-                            Text("Identify children", fontSize = 10.sp, color = Color.White.copy(alpha = 0.8f))
-                        }
-                    }
-
-                    // Card 3: My Profile / My Reports
-                    Card(
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(120.dp)
-                            .clickable {
-                                navController.navigate(Route.Profile.path)
-                            },
-                        shape = RoundedCornerShape(20.dp),
-                        elevation = CardDefaults.cardElevation(8.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = uniformColor,
-                            contentColor = Color.White
-                        )
-                    ) {
-                        Column(
-                            modifier = Modifier.fillMaxSize().padding(8.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Person,
-                                contentDescription = "icon",
-                                modifier = Modifier.size(28.dp)
-                            )
-                            Text("MY PROFILE", fontSize = 14.sp, fontWeight = FontWeight.Bold)
-                            Text("Track entries", fontSize = 10.sp, color = Color.White.copy(alpha = 0.8f))
-                        }
-                    }
-                }
+                // Button 3: My Profile & Reports
+                DashboardWaterButton(
+                    text = "MY PROFILE & REPORTS",
+                    subtitle = "Track your entries",
+                    icon = Icons.Default.Person,
+                    color = SecurityBlue,
+                    onClick = { navController.navigate(Route.Profile.path) }
+                )
 
                 // New Section Header with Dropdown
                 var isReportsVisible by remember { mutableStateOf(true) }
                 Spacer(modifier = Modifier.height(8.dp))
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { isReportsVisible = !isReportsVisible }
-                        .padding(vertical = 8.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Recently Reported Children",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.Red
-                    )
-                    Icon(
-                        imageVector = if (isReportsVisible) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
-                        contentDescription = "toggle reports",
-                        tint = Color.Red
-                    )
-                }
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { isReportsVisible = !isReportsVisible }
+                            .padding(vertical = 8.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Recently Reported Children",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = AlertRed
+                        )
+                        Icon(
+                            imageVector = if (isReportsVisible) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                            contentDescription = "toggle reports",
+                            tint = AlertRed
+                        )
+                    }
 
                 // Recently Reported Children Cards (Animated)
                 AnimatedVisibility(visible = isReportsVisible) {
@@ -462,7 +395,7 @@ fun DashboardScreen(navController: NavHostController){
 
                                             if (child.status != "Found") {
                                                 Surface(
-                                                    color = Color.Red,
+                                                    color = AlertRed,
                                                     shape = RoundedCornerShape(bottomEnd = 12.dp),
                                                     modifier = Modifier.align(Alignment.TopStart)
                                                 ) {
@@ -491,7 +424,7 @@ fun DashboardScreen(navController: NavHostController){
                                                 text = child.name.uppercase(),
                                                 fontSize = 18.sp,
                                                 fontWeight = FontWeight.Bold,
-                                                color = if (child.status == "Found") Color(0xFF2E7D32) else Color.Red
+                                                color = if (child.status == "Found") Color(0xFF2E7D32) else AlertRed
                                             )
                                             Text(
                                                 text = "AGE: ${child.age} YEARS",
@@ -553,6 +486,81 @@ fun StatCard(label: String, value: String, color: Color) {
         ) {
             Text(value, fontWeight = FontWeight.Bold, fontSize = 20.sp, color = color)
             Text(label, fontSize = 12.sp, color = Color.Gray)
+        }
+    }
+}
+
+@Composable
+fun DashboardWaterButton(
+    text: String,
+    subtitle: String,
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    color: Color,
+    onClick: () -> Unit
+) {
+    // Water-like gradient: main color to a slightly lighter version
+    val gradient = Brush.horizontalGradient(
+        colors = listOf(color, color.copy(alpha = 0.8f))
+    )
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth(0.9f)
+            .height(75.dp)
+            .clickable { onClick() },
+        shape = androidx.compose.foundation.shape.CircleShape, // The "Water/Pill" shape
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.Transparent) // Use gradient in background
+    ) {
+        Box(
+            modifier = Modifier
+                .background(gradient)
+                .fillMaxSize()
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 20.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Icon with a soft "bubble" background
+                Surface(
+                    modifier = Modifier.size(45.dp),
+                    shape = CircleShape,
+                    color = Color.White.copy(alpha = 0.25f)
+                ) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = null,
+                        modifier = Modifier.padding(10.dp),
+                        tint = Color.White
+                    )
+                }
+                
+                Spacer(modifier = Modifier.width(16.dp))
+                
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = text,
+                        color = Color.White,
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Black
+                    )
+                    Text(
+                        text = subtitle,
+                        color = Color.White.copy(alpha = 0.7f),
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+                
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                    contentDescription = null,
+                    tint = Color.White.copy(alpha = 0.6f),
+                    modifier = Modifier.size(24.dp)
+                )
+            }
         }
     }
 }

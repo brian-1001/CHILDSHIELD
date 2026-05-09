@@ -38,6 +38,8 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import com.example.childshield.data.ReportViewModel
+import com.example.childshield.ui.theme.AlertRed
+import com.example.childshield.ui.theme.SecurityBlue
 import com.google.android.gms.location.LocationServices
 import java.util.*
 
@@ -114,7 +116,7 @@ fun AddReportScreen(navController: NavHostController) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "back", tint = Color.White)
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Red)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = AlertRed)
             )
         }
     ) { paddingValues ->
@@ -192,7 +194,7 @@ fun AddReportScreen(navController: NavHostController) {
                         }
                     },
                     modifier = Modifier.weight(1f),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
+                    colors = ButtonDefaults.buttonColors(containerColor = AlertRed),
                     shape = RoundedCornerShape(8.dp)
                 ) {
                     Text(if (currentStep == 3) "SUBMIT REPORT" else "NEXT", fontWeight = FontWeight.Bold)
@@ -206,14 +208,14 @@ fun AddReportScreen(navController: NavHostController) {
 fun EmergencyGuidanceCard() {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFFFEBEE)),
+        colors = CardDefaults.cardColors(containerColor = AlertRed.copy(alpha = 0.1f)),
         border = CardDefaults.outlinedCardBorder()
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Default.Info, contentDescription = null, tint = Color.Red)
+                Icon(Icons.Default.Info, contentDescription = null, tint = AlertRed)
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("IMMEDIATE ACTIONS", fontWeight = FontWeight.Bold, color = Color.Red)
+                Text("IMMEDIATE ACTIONS", fontWeight = FontWeight.Bold, color = AlertRed)
             }
             Spacer(modifier = Modifier.height(4.dp))
             Text("• Call Emergency Services (999) immediately.", fontSize = 13.sp)
@@ -231,9 +233,9 @@ fun StepIndicator(currentStep: Int) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         StepCircle(1, currentStep >= 1)
-        HorizontalDivider(modifier = Modifier.width(40.dp).padding(horizontal = 4.dp), color = if(currentStep >= 2) Color.Red else Color.Gray)
+        HorizontalDivider(modifier = Modifier.width(40.dp).padding(horizontal = 4.dp), color = if(currentStep >= 2) AlertRed else Color.Gray)
         StepCircle(2, currentStep >= 2)
-        HorizontalDivider(modifier = Modifier.width(40.dp).padding(horizontal = 4.dp), color = if(currentStep >= 3) Color.Red else Color.Gray)
+        HorizontalDivider(modifier = Modifier.width(40.dp).padding(horizontal = 4.dp), color = if(currentStep >= 3) AlertRed else Color.Gray)
         StepCircle(3, currentStep >= 3)
     }
 }
@@ -242,7 +244,7 @@ fun StepIndicator(currentStep: Int) {
 fun StepCircle(step: Int, isActive: Boolean) {
     Surface(
         shape = androidx.compose.foundation.shape.CircleShape,
-        color = if (isActive) Color.Red else Color.Gray,
+        color = if (isActive) AlertRed else Color.Gray,
         modifier = Modifier.size(30.dp)
     ) {
         Box(contentAlignment = Alignment.Center) {
@@ -322,7 +324,7 @@ fun StepTwoDisappearance(date: String, onDateClick: () -> Unit, time: String, on
         Button(
             onClick = onTagLocation,
             modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(containerColor = if (isLocationTagged) Color(0xFF4CAF50) else Color.Blue)
+            colors = ButtonDefaults.buttonColors(containerColor = if (isLocationTagged) Color(0xFF4CAF50) else SecurityBlue)
         ) {
             Icon(if (isLocationTagged) Icons.Default.CheckCircle else Icons.Default.MyLocation, contentDescription = null)
             Spacer(modifier = Modifier.width(8.dp))

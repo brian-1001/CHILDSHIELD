@@ -29,6 +29,8 @@ import coil.compose.AsyncImage
 import com.example.childshield.data.ReportViewModel
 import com.example.childshield.models.ChildModel
 import com.example.childshield.navigation.Route
+import com.example.childshield.ui.theme.AlertRed
+import com.example.childshield.ui.theme.SecurityBlue
 import com.google.firebase.auth.FirebaseAuth
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -53,7 +55,7 @@ fun ReportListScreen(navController: NavHostController) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "back", tint = Color.White)
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Blue)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = SecurityBlue)
             )
         }
     ) { paddingValues ->
@@ -61,7 +63,7 @@ fun ReportListScreen(navController: NavHostController) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .background(Color(0xFF3F51B5))
+                .background(SecurityBlue)
         ) {
             val myReports = reports.filter { it.reporterId == currentUserId }
 
@@ -132,7 +134,7 @@ fun ReportCard(child: ChildModel, navController: NavHostController, reportViewMo
                     text = child.name.uppercase(),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
-                    color = if (child.status == "Found") Color(0xFF2E7D32) else Color.Red
+                    color = if (child.status == "Found") Color(0xFF2E7D32) else AlertRed
                 )
                 Text(text = "Age: ${child.age} yrs", fontSize = 14.sp)
                 Text(text = "Location: ${child.lastSeenLocation}", fontSize = 14.sp, color = Color.Gray)
@@ -140,7 +142,7 @@ fun ReportCard(child: ChildModel, navController: NavHostController, reportViewMo
                     text = "Status: ${child.status}",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
-                    color = if (child.status == "Found") Color(0xFF2E7D32) else Color.Red
+                    color = if (child.status == "Found") Color(0xFF2E7D32) else AlertRed
                 )
             }
 
