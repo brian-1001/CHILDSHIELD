@@ -4,9 +4,11 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -14,7 +16,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -57,13 +61,20 @@ fun SplashScreen(navController: NavHostController){
                 painter = painterResource(id = R.drawable.chuotanhls_kids_4305233_1920),
                 contentDescription = "logo",
                 modifier = Modifier
-                    .size(250.dp)
-                    .clip(CircleShape)
-                    .background(Color.LightGray)
+                    .size(350.dp)
+                    .clip(RoundedCornerShape(24.dp)),
+                contentScale = ContentScale.Crop
             )
-            Text(text = "Welcome to ChildShield",
+            Spacer(modifier = Modifier.height(30.dp))
+            Text(text = "CHILD SHIELD",
                 color = SecurityBlue,
-                fontSize = 24.sp
+                fontSize = 32.sp,
+                fontWeight = FontWeight.ExtraBold
+            )
+            Text(text = "Protecting Our Future",
+                color = Color.Gray,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium
             )
         }
     }
