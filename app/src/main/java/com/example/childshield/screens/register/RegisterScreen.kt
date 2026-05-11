@@ -126,6 +126,14 @@ fun RegisterScreen(navController: NavHostController) {
             )
         )
 
+        Text(
+            "Creating an account will allow you to report and manage cases across all your devices.",
+            fontSize = 12.sp,
+            color = Color.Gray,
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
+
         Spacer(modifier = Modifier.height(30.dp))
 
         Button(

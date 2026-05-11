@@ -51,7 +51,9 @@ class AuthViewModel(var navController: NavHostController, var context: Context) 
                 reference.setValue(userData).addOnCompleteListener { task2 ->
                     if (task2.isSuccessful) {
                         Toast.makeText(context, "Registration successful", Toast.LENGTH_SHORT).show()
-                        navController.navigate(Route.Login.path)
+                        navController.navigate(Route.Dashboard.path) {
+                            popUpTo(Route.Register.path) { inclusive = true }
+                        }
                     } else {
                         Toast.makeText(context, task2.exception?.message, Toast.LENGTH_SHORT).show()
                     }
@@ -71,10 +73,15 @@ class AuthViewModel(var navController: NavHostController, var context: Context) 
             return
         }
 
+        // Ensure any previous session is cleared for a fresh login
+        mAuth.signOut()
+
         mAuth.signInWithEmailAndPassword(trimmedEmail, trimmedPass).addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 Toast.makeText(context, "Login successful", Toast.LENGTH_SHORT).show()
-                navController.navigate(Route.Dashboard.path)
+                navController.navigate(Route.Dashboard.path) {
+                    popUpTo(Route.Login.path) { inclusive = true }
+                }
             } else {
                 val exception = task.exception
                 val message = exception?.message?.lowercase() ?: ""

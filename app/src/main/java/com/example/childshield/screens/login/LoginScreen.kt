@@ -128,6 +128,14 @@ fun LoginScreen(navController: NavHostController) {
             )
         )
 
+        Text(
+            "Please use the email and password you used to register for ChildShield.",
+            fontSize = 12.sp,
+            color = Color.Gray,
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
+
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
