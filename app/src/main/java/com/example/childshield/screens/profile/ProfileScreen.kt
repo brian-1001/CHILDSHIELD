@@ -74,11 +74,13 @@ import com.google.firebase.auth.FirebaseAuth
 fun ProfileScreen(navController: NavHostController) {
     val context = LocalContext.current
     val isPreview = LocalInspectionMode.current
-    val authViewModel = AuthViewModel(navController, context)
-    val reportViewModel = ReportViewModel(navController, context)
+    
+    // Only initialize ViewModels if not in preview to avoid NPE
+    val authViewModel = remember { if (isPreview) null else AuthViewModel(navController, context) }
+    val reportViewModel = remember { if (isPreview) null else ReportViewModel(navController, context) }
 
-    var user by remember { mutableStateOf<User?>(null) }
-    var isLoading by remember { mutableStateOf(true) }
+    var user by remember { mutableStateOf<User?>(if (isPreview) User(name = "John Doe", email = "john@example.com") else null) }
+    var isLoading by remember { mutableStateOf(!isPreview) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var imageUri by remember { mutableStateOf<Uri?>(null) }
     
@@ -90,7 +92,7 @@ fun ProfileScreen(navController: NavHostController) {
     ) { uri: Uri? ->
         uri?.let {
             imageUri = it
-            authViewModel.uploadProfileImage(it)
+            authViewModel?.uploadProfileImage(it)
         }
     }
 
@@ -102,17 +104,15 @@ fun ProfileScreen(navController: NavHostController) {
                 errorMessage = "Not logged in"
                 isLoading = false
             } else {
-                authViewModel.getUserDetails { fetchedUser ->
+                authViewModel?.getUserDetails { fetchedUser ->
                     if (fetchedUser == null) {
                         errorMessage = "Could not find profile data"
                     }
                     user = fetchedUser
                     isLoading = false
                 }
-                reportViewModel.allReports(emptyReportState, allReports)
+                reportViewModel?.allReports(emptyReportState, allReports)
             }
-        } else {
-            isLoading = false
         }
     }
 
@@ -134,7 +134,7 @@ fun ProfileScreen(navController: NavHostController) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color(0xFF121212)) // Dark background to match screenshot
+                .background(MaterialTheme.colorScheme.background)
                 .padding(paddingValues),
             horizontalAlignment = Alignment.CenterHorizontally,
             contentPadding = PaddingValues(bottom = 20.dp)
@@ -213,7 +213,7 @@ fun ProfileScreen(navController: NavHostController) {
                 Card(
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
                     elevation = CardDefaults.cardElevation(4.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFF1E1E1E)) // Dark card
+                    colors = CardDefaults.cardColors(containerColor = Color.White) // Back to light card
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text("ACCOUNT DETAILS", style = MaterialTheme.typography.labelSmall, color = Color.Gray, fontWeight = FontWeight.Bold)
@@ -242,7 +242,7 @@ fun ProfileScreen(navController: NavHostController) {
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp),
                     style = MaterialTheme.typography.labelLarge,
                     fontWeight = FontWeight.Black,
-                    color = Color.Gray
+                    color = Color.DarkGray
                 )
                 
                 Spacer(modifier = Modifier.height(10.dp))
@@ -343,7 +343,7 @@ fun ProfileScreen(navController: NavHostController) {
 
                 // Logout Button
                 Button(
-                    onClick = { authViewModel.logout() },
+                    onClick = { authViewModel?.logout() },
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = AlertRed)
                 ) {
@@ -358,7 +358,7 @@ fun ProfileScreen(navController: NavHostController) {
 fun InfoRow(label: String, value: String) {
     Column {
         Text(text = label, style = MaterialTheme.typography.labelSmall, color = Color.Gray)
-        Text(text = value, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.SemiBold, color = Color.White)
+        Text(text = value, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.SemiBold, color = Color.Black)
     }
 }
 

@@ -64,7 +64,7 @@ fun ReportListScreen(navController: NavHostController) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .background(SecurityBlue)
+                .background(MaterialTheme.colorScheme.background)
         ) {
             val myReports = reports.filter { it.reporterId == currentUserId }
 

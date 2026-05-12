@@ -18,9 +18,14 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.IconButton
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -49,13 +54,14 @@ import com.example.childshield.ui.theme.SecurityBlue
 fun LoginScreen(navController: NavHostController) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var passwordVisible by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val myauth = AuthViewModel(navController, context)
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(MaterialTheme.colorScheme.background)
             .padding(20.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
@@ -96,7 +102,7 @@ fun LoginScreen(navController: NavHostController) {
                 focusedTextColor = Color.Black,
                 unfocusedTextColor = Color.Black,
                 focusedBorderColor = SecurityBlue,
-                unfocusedBorderColor = Color.Black,
+                unfocusedBorderColor = SecurityBlue,
                 focusedLabelColor = SecurityBlue,
                 unfocusedLabelColor = SecurityBlue,
                 cursorColor = SecurityBlue
@@ -115,13 +121,19 @@ fun LoginScreen(navController: NavHostController) {
                     tint = SecurityBlue
                 )
             },
+            trailingIcon = {
+                val icon = if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff
+                IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                    Icon(imageVector = icon, contentDescription = "Toggle password visibility", tint = SecurityBlue)
+                }
+            },
             modifier = Modifier.fillMaxWidth(),
-            visualTransformation = PasswordVisualTransformation(),
+            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
             colors = OutlinedTextFieldDefaults.colors(
                 focusedTextColor = Color.Black,
                 unfocusedTextColor = Color.Black,
                 focusedBorderColor = SecurityBlue,
-                unfocusedBorderColor = Color.Black,
+                unfocusedBorderColor = SecurityBlue,
                 focusedLabelColor = SecurityBlue,
                 unfocusedLabelColor = SecurityBlue,
                 cursorColor = SecurityBlue

@@ -16,7 +16,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -32,6 +35,8 @@ fun RegisterScreen(navController: NavHostController) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confpassword by remember { mutableStateOf("") }
+    var passwordVisible by remember { mutableStateOf(false) }
+    var confPasswordVisible by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
     val myauth = AuthViewModel(navController, context)
@@ -39,7 +44,7 @@ fun RegisterScreen(navController: NavHostController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(MaterialTheme.colorScheme.background)
             .padding(20.dp)
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -83,7 +88,7 @@ fun RegisterScreen(navController: NavHostController) {
                 focusedTextColor = Color.Black,
                 unfocusedTextColor = Color.Black,
                 focusedBorderColor = SecurityBlue,
-                unfocusedBorderColor = Color.Black,
+                unfocusedBorderColor = SecurityBlue,
                 cursorColor = SecurityBlue
             )
         )
@@ -96,13 +101,19 @@ fun RegisterScreen(navController: NavHostController) {
             label = { Text("Password", color = SecurityBlue) },
             singleLine = true,
             leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null, tint = SecurityBlue) },
+            trailingIcon = {
+                val icon = if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff
+                IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                    Icon(imageVector = icon, contentDescription = null, tint = SecurityBlue)
+                }
+            },
             modifier = Modifier.fillMaxWidth(),
-            visualTransformation = PasswordVisualTransformation(),
+            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
             colors = OutlinedTextFieldDefaults.colors(
                 focusedTextColor = Color.Black,
                 unfocusedTextColor = Color.Black,
                 focusedBorderColor = SecurityBlue,
-                unfocusedBorderColor = Color.Black,
+                unfocusedBorderColor = SecurityBlue,
                 cursorColor = SecurityBlue
             )
         )
@@ -115,13 +126,19 @@ fun RegisterScreen(navController: NavHostController) {
             label = { Text("Confirm Password", color = SecurityBlue) },
             singleLine = true,
             leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null, tint = SecurityBlue) },
+            trailingIcon = {
+                val icon = if (confPasswordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff
+                IconButton(onClick = { confPasswordVisible = !confPasswordVisible }) {
+                    Icon(imageVector = icon, contentDescription = null, tint = SecurityBlue)
+                }
+            },
             modifier = Modifier.fillMaxWidth(),
-            visualTransformation = PasswordVisualTransformation(),
+            visualTransformation = if (confPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
             colors = OutlinedTextFieldDefaults.colors(
                 focusedTextColor = Color.Black,
                 unfocusedTextColor = Color.Black,
                 focusedBorderColor = SecurityBlue,
-                unfocusedBorderColor = Color.Black,
+                unfocusedBorderColor = SecurityBlue,
                 cursorColor = SecurityBlue
             )
         )
