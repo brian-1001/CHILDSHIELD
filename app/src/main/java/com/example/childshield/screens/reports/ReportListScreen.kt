@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
@@ -88,6 +89,7 @@ fun ReportListScreen(navController: NavHostController) {
 
 @Composable
 fun ReportCard(child: ChildModel, navController: NavHostController, reportViewModel: ReportViewModel) {
+    val context = LocalContext.current
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -138,6 +140,7 @@ fun ReportCard(child: ChildModel, navController: NavHostController, reportViewMo
                 )
                 Text(text = "Age: ${child.age} yrs", fontSize = 14.sp)
                 Text(text = "Location: ${child.lastSeenLocation}", fontSize = 14.sp, color = Color.Gray)
+                Text(text = "📞 Contact: ${child.emergencyContact}", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = SecurityBlue)
                 Text(
                     text = "Status: ${child.status}",
                     fontSize = 14.sp,
@@ -146,9 +149,18 @@ fun ReportCard(child: ChildModel, navController: NavHostController, reportViewMo
                 )
             }
 
-            // Delete Icon (Only if reporter or for demo)
-            IconButton(onClick = { reportViewModel.deleteReport(child.id) }) {
-                Icon(Icons.Default.Delete, contentDescription = "delete", tint = Color.Gray)
+            // Action Icons
+            Column {
+                IconButton(onClick = {
+                    val intent = android.content.Intent(android.content.Intent.ACTION_DIAL)
+                    intent.data = android.net.Uri.parse("tel:${child.emergencyContact}")
+                    context.startActivity(intent)
+                }) {
+                    Icon(Icons.Default.Call, contentDescription = "call", tint = Color(0xFF4CAF50))
+                }
+                IconButton(onClick = { reportViewModel.deleteReport(child.id) }) {
+                    Icon(Icons.Default.Delete, contentDescription = "delete", tint = Color.Gray)
+                }
             }
         }
     }

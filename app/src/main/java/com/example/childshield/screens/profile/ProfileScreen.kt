@@ -311,6 +311,7 @@ fun ProfileScreen(navController: NavHostController) {
                             
                             Column(modifier = Modifier.weight(1f)) {
                                 Text(child.name, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                                Text(text = "📞 ${child.emergencyContact}", fontSize = 12.sp, color = Color.Gray)
                                 Text(
                                     text = if(child.status == "Found") "Reunited ✅" else "Still Missing 🚨",
                                     color = if(child.status == "Found") Color(0xFF2E7D32) else AlertRed,
