@@ -41,6 +41,7 @@ class AuthViewModel(var navController: NavHostController, var context: Context) 
                 val userId = currentUser?.uid ?: ""
                 val userData = User(
                     name = name,
+                    fullName = name,
                     email = email,
                     userId = userId,
                     imageUrl = ""
@@ -138,7 +139,7 @@ class AuthViewModel(var navController: NavHostController, var context: Context) 
             reference.addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val user = snapshot.getValue(User::class.java)
-                    callback(user?.name ?: "No name")
+                    callback(user?.fullName?.takeIf { it.isNotBlank() } ?: user?.name ?: "No name")
                 }
 
                 override fun onCancelled(error: DatabaseError) {
@@ -170,7 +171,9 @@ class AuthViewModel(var navController: NavHostController, var context: Context) 
 
     fun logout() {
         mAuth.signOut()
-        navController.navigate(Route.Login.path)
+        navController.navigate(Route.Login.path) {
+            popUpTo(Route.Dashboard.path) { inclusive = true }
+        }
     }
 
     fun signout() {
@@ -238,7 +241,9 @@ class AuthViewModel(var navController: NavHostController, var context: Context) 
 
 data class User(
     val name: String = "",
+    val fullName: String = "",
     val email: String = "",
     val userId: String = "",
-    val imageUrl: String = ""
+    val imageUrl: String = "",
+    val phoneNumber: String = ""
 )

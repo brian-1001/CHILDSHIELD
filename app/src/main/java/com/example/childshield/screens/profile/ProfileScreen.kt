@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -133,6 +134,7 @@ fun ProfileScreen(navController: NavHostController) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
+                .background(Color(0xFF121212)) // Dark background to match screenshot
                 .padding(paddingValues),
             horizontalAlignment = Alignment.CenterHorizontally,
             contentPadding = PaddingValues(bottom = 20.dp)
@@ -210,15 +212,25 @@ fun ProfileScreen(navController: NavHostController) {
                 // User basic info
                 Card(
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
-                    elevation = CardDefaults.cardElevation(4.dp)
+                    elevation = CardDefaults.cardElevation(4.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFF1E1E1E)) // Dark card
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        Text("ACCOUNT DETAILS", style = MaterialTheme.typography.labelSmall, color = Color.Gray)
-                        Spacer(modifier = Modifier.height(8.dp))
+                        Text("ACCOUNT DETAILS", style = MaterialTheme.typography.labelSmall, color = Color.Gray, fontWeight = FontWeight.Bold)
+                        Spacer(modifier = Modifier.height(12.dp))
                         
-                        InfoRow(label = "Full Name", value = if (isLoading) "Loading..." else (user?.name ?: errorMessage ?: "User not found"))
-                        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-                        InfoRow(label = "Email Address", value = if (isLoading) "Loading..." else (user?.email ?: errorMessage ?: "N/A"))
+                        val displayName = user?.fullName?.takeIf { it.isNotBlank() } 
+                            ?: user?.name?.takeIf { it.isNotBlank() } 
+                            ?: FirebaseAuth.getInstance().currentUser?.displayName?.takeIf { it.isNotBlank() }
+                            ?: (if (isLoading) "Loading..." else "Not Set")
+                            
+                        val displayEmail = user?.email?.takeIf { it.isNotBlank() } 
+                            ?: FirebaseAuth.getInstance().currentUser?.email 
+                            ?: (if (isLoading) "Loading..." else "N/A")
+
+                        InfoRow(label = "Full Name", value = displayName)
+                        HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), color = Color.Gray.copy(alpha = 0.3f))
+                        InfoRow(label = "Email Address", value = displayEmail)
                     }
                 }
 
@@ -230,7 +242,7 @@ fun ProfileScreen(navController: NavHostController) {
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp),
                     style = MaterialTheme.typography.labelLarge,
                     fontWeight = FontWeight.Black,
-                    color = Color.DarkGray
+                    color = Color.Gray
                 )
                 
                 Spacer(modifier = Modifier.height(10.dp))
@@ -310,7 +322,7 @@ fun ProfileScreen(navController: NavHostController) {
                             Spacer(modifier = Modifier.width(16.dp))
                             
                             Column(modifier = Modifier.weight(1f)) {
-                                Text(child.name, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                                Text(child.name, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Color.Black)
                                 Text(text = "📞 ${child.emergencyContact}", fontSize = 12.sp, color = Color.Gray)
                                 Text(
                                     text = if(child.status == "Found") "Reunited ✅" else "Still Missing 🚨",
@@ -346,7 +358,7 @@ fun ProfileScreen(navController: NavHostController) {
 fun InfoRow(label: String, value: String) {
     Column {
         Text(text = label, style = MaterialTheme.typography.labelSmall, color = Color.Gray)
-        Text(text = value, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.SemiBold)
+        Text(text = value, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.SemiBold, color = Color.White)
     }
 }
 

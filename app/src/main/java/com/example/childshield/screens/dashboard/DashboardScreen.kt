@@ -255,8 +255,11 @@ fun DashboardScreen(navController: NavHostController){
                 }
                 
                 Column(modifier = Modifier.padding(start = 16.dp)) {
+                    val displayName = user?.fullName?.takeIf { it.isNotBlank() } 
+                        ?: user?.name?.takeIf { it.isNotBlank() } 
+                        ?: "User"
                     Text(
-                        text = "Hello, ${user?.name ?: "User"}!",
+                        text = "Hello, $displayName!",
                         fontSize = 22.sp,
                         fontWeight = FontWeight.ExtraBold,
                         color = Color.Black
