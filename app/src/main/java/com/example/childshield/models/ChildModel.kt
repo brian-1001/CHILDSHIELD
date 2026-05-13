@@ -16,5 +16,6 @@ data class ChildModel(
     val emergencyContact: String = "",
     val imageUrl: String = "",
     val status: String = "Missing", // Missing or Found
-    val reporterId: String = ""
+    val reporterId: String = "",
+    val timestamp: Long = System.currentTimeMillis()
 )

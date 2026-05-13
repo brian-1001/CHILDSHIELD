@@ -128,7 +128,7 @@ fun ProfileScreen(navController: NavHostController) {
         }
     ) { paddingValues ->
 
-        val myReports = allReports.filter { it.reporterId == (user?.userId ?: "") }
+        val myReports = allReports.filter { it.reporterId == (user?.userId ?: "") }.sortedByDescending { it.timestamp }
         val resolvedCount = myReports.count { it.status == "Found" }
 
         LazyColumn(

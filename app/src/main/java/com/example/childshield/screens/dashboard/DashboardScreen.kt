@@ -339,7 +339,7 @@ fun DashboardScreen(navController: NavHostController){
                         if (reports.isEmpty()) {
                             Text("No reports found", modifier = Modifier.padding(vertical = 8.dp))
                         } else {
-                            reports.filter {
+                            reports.sortedByDescending { it.timestamp }.filter {
                                 it.name.contains(searchQuery, ignoreCase = true) ||
                                         it.lastSeenLocation.contains(searchQuery, ignoreCase = true)
                             }.take(5).forEach { child ->

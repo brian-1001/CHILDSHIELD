@@ -66,7 +66,7 @@ fun ReportListScreen(navController: NavHostController) {
                 .padding(paddingValues)
                 .background(MaterialTheme.colorScheme.background)
         ) {
-            val myReports = reports.filter { it.reporterId == currentUserId }
+            val myReports = reports.filter { it.reporterId == currentUserId }.sortedByDescending { it.timestamp }
 
             if (myReports.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

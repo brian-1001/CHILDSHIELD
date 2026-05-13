@@ -272,9 +272,27 @@ fun StepOneIdentity(name: String, onNameChange: (String) -> Unit, age: String, o
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
                 modifier = Modifier.menuAnchor().fillMaxWidth()
             )
-            ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                listOf("Male", "Female", "Other").forEach {
-                    DropdownMenuItem(text = { Text(it) }, onClick = { onGenderChange(it); expanded = false })
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+                modifier = Modifier.background(Color.White)
+            ) {
+                listOf("Male", "Female", "Other").forEach { selection ->
+                    DropdownMenuItem(
+                        text = { 
+                            Text(
+                                text = selection,
+                                color = Color.Black,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Medium
+                            ) 
+                        },
+                        onClick = { 
+                            onGenderChange(selection)
+                            expanded = false 
+                        },
+                        modifier = Modifier.background(Color.White)
+                    )
                 }
             }
         }
