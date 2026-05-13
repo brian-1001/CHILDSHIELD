@@ -352,11 +352,7 @@ fun DashboardScreen(navController: NavHostController){
                                             if (isOwner) {
                                                 navController.navigate(Route.UpdateReport.path + "/${child.id}")
                                             } else {
-                                                Toast.makeText(
-                                                    context,
-                                                    "You can only edit your own reports",
-                                                    Toast.LENGTH_SHORT
-                                                ).show()
+                                                navController.navigate("poster/${child.id}")
                                             }
                                         },
                                     shape = RoundedCornerShape(16.dp),

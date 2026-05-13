@@ -81,7 +81,8 @@ class ReportViewModel(
                     emergencyContact = emergencyContact,
                     status = status,
                     imageUrl = imageUrl,
-                    reporterId = userId
+                    reporterId = userId,
+                    timestamp = System.currentTimeMillis()
                 )
 
                 ref.setValue(reportData).addOnCompleteListener {

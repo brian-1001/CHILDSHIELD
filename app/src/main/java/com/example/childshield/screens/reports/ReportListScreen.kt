@@ -50,7 +50,7 @@ fun ReportListScreen(navController: NavHostController) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("My Reported Cases", color = Color.White) },
+                title = { Text("All Missing Cases", color = Color.White) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "back", tint = Color.White)
@@ -66,11 +66,11 @@ fun ReportListScreen(navController: NavHostController) {
                 .padding(paddingValues)
                 .background(MaterialTheme.colorScheme.background)
         ) {
-            val myReports = reports.filter { it.reporterId == currentUserId }.sortedByDescending { it.timestamp }
+            val sortedReports = reports.sortedByDescending { it.timestamp }
 
-            if (myReports.isEmpty()) {
+            if (sortedReports.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("You haven't reported any cases yet.")
+                    Text("No missing cases reported yet.")
                 }
             } else {
                 LazyColumn(
@@ -78,8 +78,8 @@ fun ReportListScreen(navController: NavHostController) {
                     contentPadding = PaddingValues(16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    items(myReports) { child ->
-                        ReportCard(child, navController, reportViewModel)
+                    items(sortedReports) { child ->
+                        ReportCard(child, navController, reportViewModel, currentUserId)
                     }
                 }
             }
@@ -88,13 +88,19 @@ fun ReportListScreen(navController: NavHostController) {
 }
 
 @Composable
-fun ReportCard(child: ChildModel, navController: NavHostController, reportViewModel: ReportViewModel) {
+fun ReportCard(child: ChildModel, navController: NavHostController, reportViewModel: ReportViewModel, currentUserId: String) {
     val context = LocalContext.current
+    val isOwner = child.reporterId == currentUserId
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .clickable {
-                navController.navigate(Route.UpdateReport.path + "/${child.id}")
+                if (isOwner) {
+                    navController.navigate(Route.UpdateReport.path + "/${child.id}")
+                } else {
+                    navController.navigate("poster/${child.id}")
+                }
             },
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(8.dp),
@@ -158,8 +164,11 @@ fun ReportCard(child: ChildModel, navController: NavHostController, reportViewMo
                 }) {
                     Icon(Icons.Default.Call, contentDescription = "call", tint = Color(0xFF4CAF50))
                 }
-                IconButton(onClick = { reportViewModel.deleteReport(child.id) }) {
-                    Icon(Icons.Default.Delete, contentDescription = "delete", tint = Color.Gray)
+                
+                if (isOwner) {
+                    IconButton(onClick = { reportViewModel.deleteReport(child.id) }) {
+                        Icon(Icons.Default.Delete, contentDescription = "delete", tint = Color.Gray)
+                    }
                 }
             }
         }
